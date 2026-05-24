@@ -50,8 +50,8 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
           aria-pressed={mode === 'city'}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
             mode === 'city'
-              ? 'bg-white/20 text-white'
-              : 'text-white/50 hover:text-white/80'
+              ? 'bg-slate-200 dark:bg-white/20 text-slate-900 dark:text-white'
+              : 'text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/80'
           }`}
         >
           Cidade
@@ -62,8 +62,8 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
           aria-pressed={mode === 'cep'}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
             mode === 'cep'
-              ? 'bg-white/20 text-white'
-              : 'text-white/50 hover:text-white/80'
+              ? 'bg-slate-200 dark:bg-white/20 text-slate-900 dark:text-white'
+              : 'text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/80'
           }`}
         >
           CEP
@@ -74,7 +74,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
         <div className="flex flex-1 flex-col gap-1">
           {mode === 'city' ? (
             <>
-              <label htmlFor="city-input" className="text-sm font-medium text-white/80">
+              <label htmlFor="city-input" className="text-sm font-medium text-slate-600 dark:text-white/80">
                 Nome da cidade
               </label>
               <input
@@ -85,12 +85,12 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
                 onKeyDown={handleKeyDown}
                 placeholder="Ex: São Paulo, London, Tokyo..."
                 autoComplete="off"
-                className="min-h-[48px] rounded-lg border border-white/25 bg-white/10 px-4 py-2 text-white placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                className="min-h-[48px] rounded-lg border border-slate-300 dark:border-white/25 bg-white dark:bg-white/10 px-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
             </>
           ) : (
             <>
-              <label htmlFor="cep-input" className="text-sm font-medium text-white/80">
+              <label htmlFor="cep-input" className="text-sm font-medium text-slate-600 dark:text-white/80">
                 CEP
               </label>
               <input
@@ -103,7 +103,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
                 maxLength={9}
                 inputMode="numeric"
                 autoComplete="postal-code"
-                className="min-h-[48px] rounded-lg border border-white/25 bg-white/10 px-4 py-2 text-white placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                className="min-h-[48px] rounded-lg border border-slate-300 dark:border-white/25 bg-white dark:bg-white/10 px-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
             </>
           )}
@@ -124,7 +124,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
         onClick={onGeolocate}
         disabled={isLoading}
         aria-label="Usar minha localização para buscar clima"
-        className="flex min-h-[40px] items-center justify-center gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex min-h-[40px] items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-white/5 px-4 py-2 text-sm text-slate-600 dark:text-white/80 transition-all hover:bg-white dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

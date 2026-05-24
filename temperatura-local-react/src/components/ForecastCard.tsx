@@ -27,13 +27,13 @@ function formatHour(timestamp: number): string {
 
 function PeriodDetail({ period, unit }: { period: ForecastItem; unit: 'C' | 'F' }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2" role="listitem">
-      <span className="text-xs text-white/70">{formatHour(period.dt)}</span>
+    <div className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2" role="listitem">
+      <span className="text-xs text-slate-500 dark:text-white/70">{formatHour(period.dt)}</span>
       <img src={period.icon_url} alt={`Previsão: ${period.description}`} className="h-8 w-8" />
-      <span className="text-xs font-bold text-pink-300">{formatTemperature(period.temperature, unit)}</span>
-      <span className="text-xs capitalize text-white/60">{period.description}</span>
-      <span className="text-xs text-emerald-300" aria-label={`Umidade: ${period.humidity}%`}>💧{period.humidity}%</span>
-      <span className="text-xs text-blue-300" aria-label={`Vento: ${period.wind_speed}`}>💨{period.wind_speed}</span>
+      <span className="text-xs font-bold text-pink-600 dark:text-pink-300">{formatTemperature(period.temperature, unit)}</span>
+      <span className="text-xs capitalize text-slate-500 dark:text-white/60">{period.description}</span>
+      <span className="text-xs text-emerald-600 dark:text-emerald-300" aria-label={`Umidade: ${period.humidity}%`}>💧{period.humidity}%</span>
+      <span className="text-xs text-blue-600 dark:text-blue-300" aria-label={`Vento: ${period.wind_speed}`}>💨{period.wind_speed}</span>
     </div>
   );
 }
@@ -43,20 +43,20 @@ function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
   const dayLabel = `${formatDay(day.dt)} ${formatDate(day.dt)}`;
 
   return (
-    <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+    <div className="rounded-xl border border-slate-200 dark:border-white/15 bg-white/60 dark:bg-white/5 p-3 shadow-sm dark:shadow-none">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src={day.icon_url} alt={`Previsão: ${day.description}`} className="h-10 w-10" />
           <div>
-            <p className="text-sm font-semibold text-white">
-              {formatDay(day.dt)} <span className="text-white/60">{formatDate(day.dt)}</span>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">
+              {formatDay(day.dt)} <span className="text-slate-500 dark:text-white/60">{formatDate(day.dt)}</span>
             </p>
-            <p className="text-xs capitalize text-purple-300">{day.description}</p>
+            <p className="text-xs capitalize text-purple-600 dark:text-purple-300">{day.description}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-bold text-pink-300">{formatTemperature(day.temp_max, unit)}</p>
-          <p className="text-xs text-blue-300">{formatTemperature(day.temp_min, unit)}</p>
+          <p className="text-sm font-bold text-pink-600 dark:text-pink-300">{formatTemperature(day.temp_max, unit)}</p>
+          <p className="text-xs text-blue-600 dark:text-blue-300">{formatTemperature(day.temp_min, unit)}</p>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
         aria-label={`${expanded ? 'Ocultar' : 'Ver'} detalhes de ${dayLabel}`}
-        className="mt-2 w-full rounded-lg bg-white/10 px-3 py-1.5 text-xs text-white/70 transition-all hover:bg-white/15 hover:text-white"
+        className="mt-2 w-full rounded-lg bg-slate-100 dark:bg-white/10 px-3 py-1.5 text-xs text-slate-600 dark:text-white/70 transition-all hover:bg-slate-200 dark:hover:bg-white/15 hover:text-slate-900 dark:hover:text-white"
       >
         {expanded ? 'Ocultar detalhes ▲' : 'Ver mais ▼'}
       </button>
@@ -93,23 +93,23 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
   const canGoForward = page < totalPages - 1;
 
   return (
-    <section className="animate-fadeInUp mt-4 rounded-2xl border border-white/25 bg-white/10 p-4 backdrop-blur-md" aria-label="Previsão dos próximos dias">
+    <section className="animate-fadeInUp mt-4 rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-4 shadow-lg dark:shadow-none backdrop-blur-md" aria-label="Previsão dos próximos dias">
       <div className="mb-3 flex items-center justify-between">
         <button
           onClick={() => setPage((p) => p - 1)}
           disabled={!canGoBack}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white transition-all hover:bg-slate-200 dark:hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Dias anteriores"
         >
           ←
         </button>
-        <h2 className="text-center text-lg font-semibold text-white">
+        <h2 className="text-center text-lg font-semibold text-slate-900 dark:text-white">
           Próximos dias
         </h2>
         <button
           onClick={() => setPage((p) => p + 1)}
           disabled={!canGoForward}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white transition-all hover:bg-slate-200 dark:hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Próximos dias"
         >
           →
@@ -129,7 +129,7 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
               key={i}
               onClick={() => setPage(i)}
               className={`h-2 w-2 rounded-full transition-all ${
-                i === page ? 'bg-pink-400 w-4' : 'bg-white/30'
+                i === page ? 'bg-pink-500 dark:bg-pink-400 w-4' : 'bg-slate-300 dark:bg-white/30'
               }`}
               aria-label={`Página ${i + 1} de ${totalPages}`}
               aria-current={i === page ? 'page' : undefined}

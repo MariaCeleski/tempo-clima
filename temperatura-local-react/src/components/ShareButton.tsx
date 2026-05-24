@@ -92,7 +92,7 @@ export function ShareButton({ data }: ShareButtonProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/70 transition-all hover:bg-white/15 hover:text-white"
+        className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/20 bg-white/80 dark:bg-white/5 px-3 py-1 text-xs text-slate-500 dark:text-white/70 transition-all hover:bg-white dark:hover:bg-white/15 hover:text-slate-900 dark:hover:text-white"
         aria-label="Compartilhar clima"
         aria-expanded={open}
       >
@@ -103,13 +103,13 @@ export function ShareButton({ data }: ShareButtonProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-48 animate-fadeInUp rounded-xl border border-white/20 bg-slate-900/95 p-2 shadow-xl backdrop-blur-lg" role="menu" aria-label="Opções de compartilhamento">
+        <div className="absolute left-0 top-full z-50 mt-2 w-48 animate-fadeInUp rounded-xl border border-slate-200 dark:border-white/20 bg-white dark:bg-slate-900/95 p-2 shadow-xl backdrop-blur-lg" role="menu" aria-label="Opções de compartilhamento">
           {shareOptions.map((option) => (
             <button
               key={option.name}
               onClick={option.action}
               role="menuitem"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-white/80 transition-all hover:bg-white/10 hover:text-white"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 dark:text-white/80 transition-all hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
             >
               <span aria-hidden="true">{option.emoji}</span>
               <span>{option.name}</span>
@@ -118,11 +118,11 @@ export function ShareButton({ data }: ShareButtonProps) {
 
           {'share' in navigator && (
             <>
-              <div className="my-1 border-t border-white/10" role="separator" />
+              <div className="my-1 border-t border-slate-200 dark:border-white/10" role="separator" />
               <button
                 onClick={handleNativeShare}
                 role="menuitem"
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-white/80 transition-all hover:bg-white/10 hover:text-white"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 dark:text-white/80 transition-all hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
               >
                 <span aria-hidden="true">📱</span>
                 <span>Mais opções...</span>

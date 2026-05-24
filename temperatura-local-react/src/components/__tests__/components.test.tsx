@@ -145,8 +145,8 @@ describe('WeatherCard', () => {
     const { container } = render(<WeatherCard data={mockData} />);
     const card = container.firstElementChild;
     expect(card).toHaveClass('backdrop-blur-md');
-    expect(card).toHaveClass('bg-white/10');
-    expect(card).toHaveClass('border-white/25');
+    expect(card).toHaveClass('dark:bg-white/10');
+    expect(card).toHaveClass('dark:border-white/25');
   });
 
   it('displays feels_like temperature', () => {

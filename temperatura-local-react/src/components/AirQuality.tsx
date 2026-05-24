@@ -3,11 +3,11 @@ interface AirQualityProps {
 }
 
 const AQI_LABELS: Record<number, { label: string; color: string; emoji: string }> = {
-  1: { label: 'Boa', color: 'text-emerald-300', emoji: '😊' },
-  2: { label: 'Razoável', color: 'text-yellow-300', emoji: '🙂' },
-  3: { label: 'Moderada', color: 'text-orange-300', emoji: '😐' },
-  4: { label: 'Ruim', color: 'text-red-300', emoji: '😷' },
-  5: { label: 'Muito Ruim', color: 'text-purple-300', emoji: '🚨' },
+  1: { label: 'Boa', color: 'text-emerald-600 dark:text-emerald-300', emoji: '😊' },
+  2: { label: 'Razoável', color: 'text-yellow-600 dark:text-yellow-300', emoji: '🙂' },
+  3: { label: 'Moderada', color: 'text-orange-600 dark:text-orange-300', emoji: '😐' },
+  4: { label: 'Ruim', color: 'text-red-600 dark:text-red-300', emoji: '😷' },
+  5: { label: 'Muito Ruim', color: 'text-purple-600 dark:text-purple-300', emoji: '🚨' },
 };
 
 export function AirQuality({ aqi }: AirQualityProps) {
@@ -15,7 +15,7 @@ export function AirQuality({ aqi }: AirQualityProps) {
 
   return (
     <div className="flex items-center justify-center gap-2 text-sm" role="status" aria-label={`Qualidade do ar: ${info.label}`}>
-      <span className="text-white/60">Ar:</span>
+      <span className="text-slate-500 dark:text-white/60">Ar:</span>
       <span className={`font-medium ${info.color}`}>
         <span aria-hidden="true">{info.emoji}</span> {info.label}
       </span>
@@ -24,7 +24,7 @@ export function AirQuality({ aqi }: AirQualityProps) {
           <div
             key={level}
             className={`h-2 w-3 rounded-sm ${
-              level <= aqi ? 'bg-current opacity-100' : 'bg-white/20'
+              level <= aqi ? 'bg-current opacity-100' : 'bg-slate-200 dark:bg-white/20'
             }`}
             style={level <= aqi ? { color: getBarColor(level) } : undefined}
           />

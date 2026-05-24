@@ -7,6 +7,7 @@ import { ErrorMessage } from './components/ErrorMessage';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UnitToggle } from './components/UnitToggle';
 import { ShareButton } from './components/ShareButton';
+import { ThemeToggle } from './components/ThemeToggle';
 
 const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
 const WeatherParticles = lazy(() => import('./components/WeatherParticles').then(m => ({ default: m.WeatherParticles })));
@@ -261,7 +262,13 @@ function App() {
   const bgClass = getBackgroundClass(weatherData?.icon_code ?? null);
 
   return (
-    <div className={`relative min-h-screen bg-gradient-to-br transition-colors duration-700 ${bgClass}`}>
+    <div className={`relative min-h-screen bg-gradient-to-br transition-colors duration-500 ${bgClass}`}>
+      {/* Light mode background overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-blue-50 to-white transition-opacity duration-500 dark:opacity-0" aria-hidden="true" />
+
+      {/* Theme toggle */}
+      <ThemeToggle />
+
       {/* Skip to content link for keyboard navigation */}
       <a
         href="#main-content"
@@ -278,7 +285,7 @@ function App() {
         className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center"
       >
         <div className="w-full max-w-md">
-          <h1 className="mb-6 text-center text-4xl font-bold text-white">
+          <h1 className="mb-6 text-center text-4xl font-bold text-slate-900 dark:text-white">
             Temperatura Local
           </h1>
 
@@ -305,7 +312,7 @@ function App() {
                   <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                 </div>
                 <WeatherCard data={weatherData} unit={unit} airQuality={airQuality} />
-                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-white/5" aria-label="Carregando mapa" />}>
+                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label="Carregando mapa" />}>
                   <WeatherMap
                     lat={weatherData.lat}
                     lon={weatherData.lon}
