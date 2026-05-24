@@ -1,25 +1,7 @@
-import { useMemo, Component, type ReactNode } from 'react';
+import { useMemo } from 'react';
 
 interface WeatherParticlesProps {
   iconCode: string | null;
-}
-
-// Error Boundary to prevent particle errors from crashing the app
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class ParticleErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false };
-
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) return null;
-    return this.props.children;
-  }
 }
 
 type ParticleType = 'rain' | 'snow' | 'sun' | 'thunder' | 'fog' | 'clouds' | null;
@@ -182,21 +164,21 @@ function FogParticles() {
   );
 }
 
-function CloudParticles() {
-  const clouds = useMemo(() =>
-    Array.from({ length: 6 }, (_, i) => ({
-      id: i,
-      top: 5 + Math.random() * 40,
-      delay: i * 2.5,
-      duration: 20 + Math.random() * 15,
-      width: 100 + Math.random() * 150,
-      height: 40 + Math.random() * 40,
-      opacity: 0.08 + Math.random() * 0.1,
-    })), []);
+// Pre-generated cloud data (static, no hooks needed)
+const CLOUD_DATA = Array.from({ length: 6 }, (_, i) => ({
+  id: i,
+  top: 5 + (i * 7.3) % 40,
+  delay: i * 2.5,
+  duration: 20 + (i * 3.7) % 15,
+  width: 100 + (i * 25),
+  height: 40 + (i * 7),
+  opacity: 0.08 + (i * 0.015),
+}));
 
+function CloudParticles() {
   return (
     <>
-      {clouds.map((cloud) => (
+      {CLOUD_DATA.map((cloud) => (
         <div
           key={cloud.id}
           className="absolute rounded-full bg-white blur-3xl"
@@ -220,15 +202,13 @@ export function WeatherParticles({ iconCode }: WeatherParticlesProps) {
   if (!type) return null;
 
   return (
-    <ParticleErrorBoundary>
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-        {type === 'rain' && <RainParticles />}
-        {type === 'snow' && <SnowParticles />}
-        {type === 'sun' && <SunParticles />}
-        {type === 'thunder' && <ThunderParticles />}
-        {type === 'fog' && <FogParticles />}
-        {type === 'clouds' && <CloudParticles />}
-      </div>
-    </ParticleErrorBoundary>
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+      {type === 'rain' && <RainParticles />}
+      {type === 'snow' && <SnowParticles />}
+      {type === 'sun' && <SunParticles />}
+      {type === 'thunder' && <ThunderParticles />}
+      {type === 'fog' && <FogParticles />}
+      {type === 'clouds' && <CloudParticles />}
+    </div>
   );
 }

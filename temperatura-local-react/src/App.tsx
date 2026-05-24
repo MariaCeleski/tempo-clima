@@ -14,8 +14,9 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { WeatherAlerts } from './components/WeatherAlerts';
 import { LanguageSelector } from './components/LanguageSelector';
 
+import { WeatherParticles } from './components/WeatherParticles';
+
 const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
-const WeatherParticles = lazy(() => import('./components/WeatherParticles').then(m => ({ default: m.WeatherParticles })));
 import {
   validateInput,
   validateCep,
@@ -339,9 +340,7 @@ function App() {
         {t('app.skipToContent')}
       </a>
 
-      <Suspense fallback={null}>
-        <WeatherParticles iconCode={weatherData?.icon_code ?? null} />
-      </Suspense>
+      <WeatherParticles iconCode={weatherData?.icon_code ?? null} />
       <main
         id="main-content"
         className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center"
