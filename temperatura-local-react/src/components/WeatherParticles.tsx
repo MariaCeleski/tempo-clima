@@ -1,7 +1,25 @@
-import { useMemo } from 'react';
+import { useMemo, Component, type ReactNode } from 'react';
 
 interface WeatherParticlesProps {
   iconCode: string | null;
+}
+
+// Error Boundary to prevent particle errors from crashing the app
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ParticleErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
 }
 
 type ParticleType = 'rain' | 'snow' | 'sun' | 'thunder' | 'fog' | 'clouds' | null;
@@ -202,13 +220,15 @@ export function WeatherParticles({ iconCode }: WeatherParticlesProps) {
   if (!type) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
-      {type === 'rain' && <RainParticles />}
-      {type === 'snow' && <SnowParticles />}
-      {type === 'sun' && <SunParticles />}
-      {type === 'thunder' && <ThunderParticles />}
-      {type === 'fog' && <FogParticles />}
-      {type === 'clouds' && <CloudParticles />}
-    </div>
+    <ParticleErrorBoundary>
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+        {type === 'rain' && <RainParticles />}
+        {type === 'snow' && <SnowParticles />}
+        {type === 'sun' && <SunParticles />}
+        {type === 'thunder' && <ThunderParticles />}
+        {type === 'fog' && <FogParticles />}
+        {type === 'clouds' && <CloudParticles />}
+      </div>
+    </ParticleErrorBoundary>
   );
 }
