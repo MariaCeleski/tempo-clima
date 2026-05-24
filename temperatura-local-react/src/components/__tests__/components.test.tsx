@@ -59,14 +59,14 @@ describe('SearchForm', () => {
 
     const input = screen.getByLabelText('Nome da cidade');
     await user.type(input, 'Rio de Janeiro');
-    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+    await user.click(screen.getByRole('button', { name: 'Buscar clima por cidade' }));
 
     expect(onSearch).toHaveBeenCalledWith('Rio de Janeiro');
   });
 
   it('disables button when isLoading is true', () => {
     render(<SearchForm {...defaultProps} isLoading={true} />);
-    expect(screen.getByRole('button', { name: 'Buscar' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Buscar clima por cidade' })).toBeDisabled();
   });
 
   it('has a label associated with the input via htmlFor', () => {
@@ -92,7 +92,7 @@ describe('SearchForm', () => {
     await user.click(screen.getByRole('button', { name: 'CEP' }));
     const input = screen.getByLabelText('CEP');
     await user.type(input, '01001000');
-    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+    await user.click(screen.getByRole('button', { name: 'Buscar clima por CEP' }));
 
     expect(onSearchByCep).toHaveBeenCalledWith('01001000');
   });
@@ -130,13 +130,13 @@ describe('WeatherCard', () => {
 
   it('applies float animation to the icon', () => {
     render(<WeatherCard data={mockData} />);
-    const icon = screen.getByAltText('nublado');
+    const icon = screen.getByAltText('Condição climática: nublado');
     expect(icon).toHaveClass('animate-float');
   });
 
   it('renders icon with correct alt text from description', () => {
     render(<WeatherCard data={mockData} />);
-    const icon = screen.getByAltText('nublado');
+    const icon = screen.getByAltText('Condição climática: nublado');
     expect(icon).toBeInTheDocument();
     expect(icon).toHaveAttribute('src', mockData.icon_url);
   });

@@ -68,7 +68,7 @@ describe('App Integration Tests', () => {
     render(<App />);
 
     const input = screen.getByLabelText('Nome da cidade');
-    const button = screen.getByRole('button', { name: 'Buscar' });
+    const button = screen.getByRole('button', { name: 'Buscar clima por cidade' });
 
     await user.type(input, 'São Paulo');
     await user.click(button);
@@ -95,7 +95,7 @@ describe('App Integration Tests', () => {
     render(<App />);
 
     const input = screen.getByLabelText('Nome da cidade');
-    const button = screen.getByRole('button', { name: 'Buscar' });
+    const button = screen.getByRole('button', { name: 'Buscar clima por cidade' });
 
     await user.type(input, 'CidadeInexistente');
     await user.click(button);
@@ -119,7 +119,7 @@ describe('App Integration Tests', () => {
     render(<App />);
 
     const input = screen.getByLabelText('Nome da cidade');
-    const button = screen.getByRole('button', { name: 'Buscar' });
+    const button = screen.getByRole('button', { name: 'Buscar clima por cidade' });
 
     await user.type(input, 'Londres');
     await user.click(button);
@@ -137,7 +137,7 @@ describe('App Integration Tests', () => {
 
     render(<App />);
 
-    const button = screen.getByRole('button', { name: 'Buscar' });
+    const button = screen.getByRole('button', { name: 'Buscar clima por cidade' });
     await user.click(button);
 
     await waitFor(() => {
@@ -159,7 +159,7 @@ describe('App Integration Tests', () => {
     render(<App />);
 
     const input = screen.getByLabelText('Nome da cidade');
-    const button = screen.getByRole('button', { name: 'Buscar' });
+    const button = screen.getByRole('button', { name: 'Buscar clima por cidade' });
 
     await user.type(input, 'Tokyo');
     await user.click(button);
