@@ -10,10 +10,7 @@ function getInitialTheme(): 'dark' | 'light' {
   } catch {
     // localStorage unavailable
   }
-  // Respect system preference
-  if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    return 'light';
-  }
+  // Default to dark theme (matches the app's design)
   return 'dark';
 }
 

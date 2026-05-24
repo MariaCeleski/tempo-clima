@@ -15,16 +15,13 @@
   <body class="transition-colors duration-300">
     <div id="root"></div>
     <script>
-      // Prevent flash of wrong theme
+      // Prevent flash of wrong theme — default is dark
       (function() {
         var theme = localStorage.getItem('temperatura-local-theme');
         if (theme === 'light') {
           document.documentElement.classList.remove('dark');
-        } else if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-          document.documentElement.classList.remove('dark');
         }
+        // Default: keep dark class (already set on <html>)
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
