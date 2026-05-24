@@ -3,6 +3,7 @@ import { SearchForm } from './components/SearchForm';
 import { WeatherCard } from './components/WeatherCard';
 import { ForecastCard } from './components/ForecastCard';
 import { SearchHistory } from './components/SearchHistory';
+import { FavoriteCities } from './components/FavoriteCities';
 import { ErrorMessage } from './components/ErrorMessage';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UnitToggle } from './components/UnitToggle';
@@ -25,7 +26,9 @@ import {
 import type { WeatherData, ForecastDay } from './types/weather';
 
 const HISTORY_KEY = 'temperatura-local-history';
+const FAVORITES_KEY = 'temperatura-local-favorites';
 const MAX_HISTORY = 8;
+const MAX_FAVORITES = 10;
 
 function loadHistory(): string[] {
   try {
@@ -45,6 +48,19 @@ function addToHistory(city: string, history: string[]): string[] {
   const updated = [city, ...filtered].slice(0, MAX_HISTORY);
   saveHistory(updated);
   return updated;
+}
+
+function loadFavorites(): string[] {
+  try {
+    const stored = localStorage.getItem(FAVORITES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavorites(favorites: string[]): void {
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
 }
 
 function getBackgroundClass(iconCode: string | null): string {
@@ -94,6 +110,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [history, setHistory] = useState<string[]>(loadHistory);
+  const [favorites, setFavorites] = useState<string[]>(loadFavorites);
   const [clearSignal, setClearSignal] = useState(0);
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
@@ -259,6 +276,34 @@ function App() {
     localStorage.removeItem(HISTORY_KEY);
   }
 
+  function toggleFavorite(city: string): void {
+    setFavorites((prev) => {
+      const exists = prev.some((f) => f.toLowerCase() === city.toLowerCase());
+      let updated: string[];
+      if (exists) {
+        updated = prev.filter((f) => f.toLowerCase() !== city.toLowerCase());
+      } else {
+        if (prev.length >= MAX_FAVORITES) return prev;
+        updated = [...prev, city];
+      }
+      saveFavorites(updated);
+      return updated;
+    });
+  }
+
+  function removeFavorite(city: string): void {
+    setFavorites((prev) => {
+      const updated = prev.filter((f) => f.toLowerCase() !== city.toLowerCase());
+      saveFavorites(updated);
+      return updated;
+    });
+  }
+
+  function clearFavorites(): void {
+    setFavorites([]);
+    localStorage.removeItem(FAVORITES_KEY);
+  }
+
   const bgClass = getBackgroundClass(weatherData?.icon_code ?? null);
 
   return (
@@ -303,6 +348,13 @@ function App() {
             onClear={handleClearHistory}
           />
 
+          <FavoriteCities
+            favorites={favorites}
+            onSelect={handleSearch}
+            onRemove={removeFavorite}
+            onClear={clearFavorites}
+          />
+
           <div className="mt-6" aria-live="polite" aria-atomic="true">
             {isLoading && <SkeletonCard />}
             {weatherData && !isLoading && (
@@ -311,7 +363,13 @@ function App() {
                   <ShareButton data={weatherData} />
                   <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                 </div>
-                <WeatherCard data={weatherData} unit={unit} airQuality={airQuality} />
+                <WeatherCard
+                  data={weatherData}
+                  unit={unit}
+                  airQuality={airQuality}
+                  isFavorite={favorites.some((f) => f.toLowerCase() === weatherData.city_name.toLowerCase())}
+                  onToggleFavorite={() => toggleFavorite(weatherData.city_name)}
+                />
                 <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label="Carregando mapa" />}>
                   <WeatherMap
                     lat={weatherData.lat}

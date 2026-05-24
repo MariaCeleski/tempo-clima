@@ -7,6 +7,8 @@ interface WeatherCardProps {
   data: WeatherData;
   unit?: 'C' | 'F';
   airQuality?: number | null;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 function formatTime(timestamp: number, timezone: number): string {
@@ -16,14 +18,26 @@ function formatTime(timestamp: number, timezone: number): string {
   return `${hours}:${minutes}`;
 }
 
-export function WeatherCard({ data, unit = 'C', airQuality }: WeatherCardProps) {
+export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, onToggleFavorite }: WeatherCardProps) {
   const suggestion = getClothingSuggestion(data.temperature);
 
   return (
     <article className="animate-fadeInUp rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" aria-label={`Clima atual em ${data.city_name}`}>
-      <h2 className="mb-1 text-center text-2xl font-bold text-slate-900 dark:text-white">
-        {data.city_name}
-      </h2>
+      <div className="mb-1 flex items-center justify-center gap-2">
+        <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-white">
+          {data.city_name}
+        </h2>
+        {onToggleFavorite && (
+          <button
+            onClick={onToggleFavorite}
+            className={`text-xl transition-colors ${isFavorite ? 'text-amber-400' : 'text-slate-300 dark:text-white/30 hover:text-amber-400 dark:hover:text-amber-400'}`}
+            aria-label={isFavorite ? `Remover ${data.city_name} dos favoritos` : `Adicionar ${data.city_name} aos favoritos`}
+            aria-pressed={isFavorite}
+          >
+            {isFavorite ? '★' : '☆'}
+          </button>
+        )}
+      </div>
       {(data.state || data.country) && (
         <p className="mb-4 text-center text-sm text-slate-500 dark:text-white/60">
           {[data.state, data.country].filter(Boolean).join(' — ')}
