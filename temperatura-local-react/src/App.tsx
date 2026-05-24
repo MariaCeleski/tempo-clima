@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { SearchForm } from './components/SearchForm';
 import { WeatherCard } from './components/WeatherCard';
 import { ForecastCard } from './components/ForecastCard';
+import { TemperatureChart } from './components/TemperatureChart';
 import { SearchHistory } from './components/SearchHistory';
 import { FavoriteCities } from './components/FavoriteCities';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -378,6 +379,9 @@ function App() {
                     temperature={weatherData.temperature}
                   />
                 </Suspense>
+                {forecast.length > 0 && (
+                  <TemperatureChart forecast={forecast} unit={unit} />
+                )}
                 <ForecastCard forecast={forecast} unit={unit} />
               </>
             )}
