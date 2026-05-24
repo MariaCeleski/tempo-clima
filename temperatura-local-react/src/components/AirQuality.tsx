@@ -14,12 +14,12 @@ export function AirQuality({ aqi }: AirQualityProps) {
   const info = AQI_LABELS[aqi] || AQI_LABELS[3];
 
   return (
-    <div className="flex items-center justify-center gap-2 text-sm">
+    <div className="flex items-center justify-center gap-2 text-sm" role="status" aria-label={`Qualidade do ar: ${info.label}`}>
       <span className="text-white/60">Ar:</span>
       <span className={`font-medium ${info.color}`}>
-        {info.emoji} {info.label}
+        <span aria-hidden="true">{info.emoji}</span> {info.label}
       </span>
-      <div className="flex gap-0.5">
+      <div className="flex gap-0.5" aria-hidden="true">
         {[1, 2, 3, 4, 5].map((level) => (
           <div
             key={level}

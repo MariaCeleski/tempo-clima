@@ -31,7 +31,11 @@ function MapUpdater({ lat, lon }: { lat: number; lon: number }) {
 
 export function WeatherMap({ lat, lon, cityName, temperature }: WeatherMapProps) {
   return (
-    <div className="animate-fadeInUp mt-4 overflow-hidden rounded-2xl border border-white/25">
+    <div
+      className="animate-fadeInUp mt-4 overflow-hidden rounded-2xl border border-white/25"
+      role="img"
+      aria-label={`Mapa mostrando a localização de ${cityName} com temperatura de ${temperature}°C`}
+    >
       <MapContainer
         center={[lat, lon]}
         zoom={11}

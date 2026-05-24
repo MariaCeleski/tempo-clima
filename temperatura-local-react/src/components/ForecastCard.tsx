@@ -27,25 +27,26 @@ function formatHour(timestamp: number): string {
 
 function PeriodDetail({ period, unit }: { period: ForecastItem; unit: 'C' | 'F' }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2" role="listitem">
       <span className="text-xs text-white/70">{formatHour(period.dt)}</span>
-      <img src={period.icon_url} alt={period.description} className="h-8 w-8" />
+      <img src={period.icon_url} alt={`Previsão: ${period.description}`} className="h-8 w-8" />
       <span className="text-xs font-bold text-pink-300">{formatTemperature(period.temperature, unit)}</span>
       <span className="text-xs capitalize text-white/60">{period.description}</span>
-      <span className="text-xs text-emerald-300">💧{period.humidity}%</span>
-      <span className="text-xs text-blue-300">💨{period.wind_speed}</span>
+      <span className="text-xs text-emerald-300" aria-label={`Umidade: ${period.humidity}%`}>💧{period.humidity}%</span>
+      <span className="text-xs text-blue-300" aria-label={`Vento: ${period.wind_speed}`}>💨{period.wind_speed}</span>
     </div>
   );
 }
 
 function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
   const [expanded, setExpanded] = useState(false);
+  const dayLabel = `${formatDay(day.dt)} ${formatDate(day.dt)}`;
 
   return (
     <div className="rounded-xl border border-white/15 bg-white/5 p-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src={day.icon_url} alt={day.description} className="h-10 w-10" />
+          <img src={day.icon_url} alt={`Previsão: ${day.description}`} className="h-10 w-10" />
           <div>
             <p className="text-sm font-semibold text-white">
               {formatDay(day.dt)} <span className="text-white/60">{formatDate(day.dt)}</span>
@@ -61,13 +62,15 @@ function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+        aria-label={`${expanded ? 'Ocultar' : 'Ver'} detalhes de ${dayLabel}`}
         className="mt-2 w-full rounded-lg bg-white/10 px-3 py-1.5 text-xs text-white/70 transition-all hover:bg-white/15 hover:text-white"
       >
         {expanded ? 'Ocultar detalhes ▲' : 'Ver mais ▼'}
       </button>
 
       {expanded && (
-        <div className="mt-2 flex flex-col gap-1.5 animate-fadeInUp">
+        <div className="mt-2 flex flex-col gap-1.5 animate-fadeInUp" role="list" aria-label={`Detalhes por período de ${dayLabel}`}>
           {day.periods.map((period) => (
             <PeriodDetail key={period.dt} period={period} unit={unit} />
           ))}
@@ -90,7 +93,7 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
   const canGoForward = page < totalPages - 1;
 
   return (
-    <div className="animate-fadeInUp mt-4 rounded-2xl border border-white/25 bg-white/10 p-4 backdrop-blur-md">
+    <section className="animate-fadeInUp mt-4 rounded-2xl border border-white/25 bg-white/10 p-4 backdrop-blur-md" aria-label="Previsão dos próximos dias">
       <div className="mb-3 flex items-center justify-between">
         <button
           onClick={() => setPage((p) => p - 1)}
@@ -100,9 +103,9 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
         >
           ←
         </button>
-        <h3 className="text-center text-lg font-semibold text-white">
+        <h2 className="text-center text-lg font-semibold text-white">
           Próximos dias
-        </h3>
+        </h2>
         <button
           onClick={() => setPage((p) => p + 1)}
           disabled={!canGoForward}
@@ -120,7 +123,7 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-3 flex justify-center gap-1.5">
+        <div className="mt-3 flex justify-center gap-1.5" role="navigation" aria-label="Páginas da previsão">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
@@ -128,11 +131,12 @@ export function ForecastCard({ forecast, unit = 'C' }: ForecastCardProps) {
               className={`h-2 w-2 rounded-full transition-all ${
                 i === page ? 'bg-pink-400 w-4' : 'bg-white/30'
               }`}
-              aria-label={`Página ${i + 1}`}
+              aria-label={`Página ${i + 1} de ${totalPages}`}
+              aria-current={i === page ? 'page' : undefined}
             />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

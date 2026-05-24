@@ -25,8 +25,8 @@ export function LocalClock({ timezone }: LocalClockProps) {
   }, [timezone]);
 
   return (
-    <p className="text-center text-sm text-white/70">
-      🕐 Hora local: <span className="font-mono text-white">{time}</span>
+    <p className="text-center text-sm text-white/70" aria-live="off" aria-atomic="true">
+      <span aria-hidden="true">🕐</span> Hora local: <time className="font-mono text-white">{time}</time>
     </p>
   );
 }

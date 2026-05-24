@@ -202,7 +202,7 @@ export function WeatherParticles({ iconCode }: WeatherParticlesProps) {
   if (!type) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
       {type === 'rain' && <RainParticles />}
       {type === 'snow' && <SnowParticles />}
       {type === 'sun' && <SunParticles />}

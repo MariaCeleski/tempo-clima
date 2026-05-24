@@ -1,6 +1,7 @@
 export function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-2xl border border-white/25 bg-white/10 p-6 backdrop-blur-md">
+    <div className="animate-pulse rounded-2xl border border-white/25 bg-white/10 p-6 backdrop-blur-md" role="status" aria-label="Carregando dados do clima">
+      <span className="sr-only">Carregando dados do clima...</span>
       {/* City name */}
       <div className="mx-auto mb-1 h-7 w-40 rounded-lg bg-white/20" />
       {/* State */}

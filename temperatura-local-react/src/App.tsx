@@ -262,10 +262,21 @@ function App() {
 
   return (
     <div className={`relative min-h-screen bg-gradient-to-br transition-colors duration-700 ${bgClass}`}>
+      {/* Skip to content link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:font-semibold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+      >
+        Pular para o conteúdo principal
+      </a>
+
       <Suspense fallback={null}>
         <WeatherParticles iconCode={weatherData?.icon_code ?? null} />
       </Suspense>
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center">
+      <main
+        id="main-content"
+        className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center"
+      >
         <div className="w-full max-w-md">
           <h1 className="mb-6 text-center text-4xl font-bold text-white">
             Temperatura Local
@@ -285,7 +296,7 @@ function App() {
             onClear={handleClearHistory}
           />
 
-          <div className="mt-6">
+          <div className="mt-6" aria-live="polite" aria-atomic="true">
             {isLoading && <SkeletonCard />}
             {weatherData && !isLoading && (
               <>
@@ -294,7 +305,7 @@ function App() {
                   <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                 </div>
                 <WeatherCard data={weatherData} unit={unit} airQuality={airQuality} />
-                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-white/5" />}>
+                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-white/5" aria-label="Carregando mapa" />}>
                   <WeatherMap
                     lat={weatherData.lat}
                     lon={weatherData.lon}
@@ -308,7 +319,7 @@ function App() {
             {error && !isLoading && <ErrorMessage message={error} />}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
