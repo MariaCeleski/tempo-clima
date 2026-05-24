@@ -5,6 +5,59 @@ const FORECAST_BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 const GEO_BASE_URL = 'https://api.openweathermap.org/geo/1.0';
 const VIACEP_BASE_URL = 'https://viacep.com.br/ws';
 
+/** Proxy base URL from environment variable. If set, requests go through the proxy first. */
+const PROXY_BASE_URL = import.meta.env.VITE_API_PROXY_URL || '';
+
+/** Timeout for proxy requests in milliseconds */
+const PROXY_TIMEOUT_MS = 5000;
+
+/**
+ * Determines if a fetch error or response should trigger a fallback to direct API.
+ * Fallback triggers: network errors, timeouts, and 5xx responses.
+ */
+function shouldFallback(error?: unknown, response?: Response): boolean {
+  if (error) return true;
+  if (response && response.status >= 500) return true;
+  return false;
+}
+
+/**
+ * Fetches from the proxy URL first (with 5s timeout). If the proxy fails
+ * (timeout, network error, or 5xx), falls back to the direct URL.
+ * If VITE_API_PROXY_URL is not set, goes directly to the direct URL.
+ *
+ * Returns the Response object from whichever source succeeds.
+ */
+export async function fetchWithFallback(
+  proxyUrl: string,
+  directUrl: string,
+  options?: { timeout?: number }
+): Promise<Response> {
+  const timeout = options?.timeout ?? 10000;
+
+  // If no proxy configured, go directly to the direct URL
+  if (!PROXY_BASE_URL) {
+    return fetch(directUrl, { signal: AbortSignal.timeout(timeout) });
+  }
+
+  // Try proxy first with 5s timeout
+  try {
+    const response = await fetch(proxyUrl, {
+      signal: AbortSignal.timeout(PROXY_TIMEOUT_MS),
+    });
+
+    // If proxy returns 5xx, fall back to direct
+    if (shouldFallback(undefined, response)) {
+      return fetch(directUrl, { signal: AbortSignal.timeout(timeout) });
+    }
+
+    return response;
+  } catch {
+    // Proxy failed (timeout, network error, etc.) — fall back to direct
+    return fetch(directUrl, { signal: AbortSignal.timeout(timeout) });
+  }
+}
+
 /** Map of Brazilian state names to their abbreviations */
 const BRAZILIAN_STATES: Record<string, string> = {
   'Acre': 'AC', 'Alagoas': 'AL', 'Amapá': 'AP', 'Amazonas': 'AM',
@@ -144,8 +197,10 @@ export function transformApiResponse(data: OpenWeatherMapResponse, state?: strin
 async function fetchStateByCoords(lat: number, lon: number): Promise<string> {
   try {
     const apiKey = import.meta.env.VITE_API_KEY;
-    const url = `${GEO_BASE_URL}/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
-    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    const directUrl = `${GEO_BASE_URL}/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
+    const proxyUrl = PROXY_BASE_URL ? `${PROXY_BASE_URL}/api/geocode/reverse?lat=${lat}&lon=${lon}` : '';
+
+    const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 5000 });
 
     if (!response.ok) return '';
 
@@ -171,11 +226,12 @@ export function buildApiUrl(city: string, lang: string = 'pt_br'): string {
  * Fetches weather data for a given city from OpenWeatherMap API.
  */
 export async function fetchWeather(city: string, lang: string = 'pt_br'): Promise<WeatherData> {
-  const url = buildApiUrl(city, lang);
+  const directUrl = buildApiUrl(city, lang);
+  const proxyUrl = PROXY_BASE_URL
+    ? `${PROXY_BASE_URL}/api/weather?q=${encodeURIComponent(city)}&units=metric&lang=${lang}`
+    : '';
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 10000 });
 
   if (response.status === 404) {
     throw new Error(`Cidade '${city}' não encontrada. Verifique a ortografia.`);
@@ -202,11 +258,12 @@ export async function fetchWeather(city: string, lang: string = 'pt_br'): Promis
  */
 export async function fetchWeatherByCoords(lat: number, lon: number, lang: string = 'pt_br'): Promise<WeatherData> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const directUrl = `${API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const proxyUrl = PROXY_BASE_URL
+    ? `${PROXY_BASE_URL}/api/weather?lat=${lat}&lon=${lon}&units=metric&lang=${lang}`
+    : '';
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 10000 });
 
   if (!response.ok) {
     throw new Error('Não foi possível obter o clima da sua localização.');
@@ -284,11 +341,12 @@ function parseForecastResponse(data: ForecastApiResponse): ForecastDay[] {
  */
 export async function fetchForecast(city: string, lang: string = 'pt_br'): Promise<ForecastDay[]> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${FORECAST_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const directUrl = `${FORECAST_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const proxyUrl = PROXY_BASE_URL
+    ? `${PROXY_BASE_URL}/api/forecast?q=${encodeURIComponent(city)}&units=metric&lang=${lang}`
+    : '';
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 10000 });
 
   if (!response.ok) {
     return [];
@@ -303,11 +361,12 @@ export async function fetchForecast(city: string, lang: string = 'pt_br'): Promi
  */
 export async function fetchForecastByCoords(lat: number, lon: number, lang: string = 'pt_br'): Promise<ForecastDay[]> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${FORECAST_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const directUrl = `${FORECAST_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
+  const proxyUrl = PROXY_BASE_URL
+    ? `${PROXY_BASE_URL}/api/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${lang}`
+    : '';
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 10000 });
 
   if (!response.ok) {
     return [];
@@ -348,11 +407,10 @@ export async function fetchCityByCep(cep: string): Promise<string> {
     throw new Error('CEP inválido. Digite um CEP com 8 dígitos.');
   }
 
-  const url = `${VIACEP_BASE_URL}/${cleanCep}/json/`;
+  const directUrl = `${VIACEP_BASE_URL}/${cleanCep}/json/`;
+  const proxyUrl = PROXY_BASE_URL ? `${PROXY_BASE_URL}/api/cep/${cleanCep}` : '';
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000),
-  });
+  const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 10000 });
 
   if (!response.ok) {
     throw new Error('Não foi possível consultar o CEP. Tente novamente.');
@@ -414,9 +472,10 @@ export function formatTemperature(celsius: number, unit: 'C' | 'F'): string {
 export async function fetchAirQuality(lat: number, lon: number): Promise<number | null> {
   try {
     const apiKey = import.meta.env.VITE_API_KEY;
-    const url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+    const directUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+    const proxyUrl = PROXY_BASE_URL ? `${PROXY_BASE_URL}/api/air-quality?lat=${lat}&lon=${lon}` : '';
 
-    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    const response = await fetchWithFallback(proxyUrl, directUrl, { timeout: 5000 });
     if (!response.ok) return null;
 
     const data = await response.json();
