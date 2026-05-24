@@ -10,6 +10,11 @@ Aplicação de clima desenvolvida com React, TypeScript, Vite e Tailwind CSS. Pe
 - Exibição do clima atual com temperatura, umidade, vento e mais
 - Informações de qualidade do ar com escala de 1 a 5
 - Previsão do tempo para 5 dias com detalhes por hora
+- Gráfico de temperatura com máximas e mínimas
+- Alertas climáticos automáticos (calor, frio, vento, tempestade)
+- Cidades favoritas com persistência local
+- Tema claro/escuro com detecção de preferência do sistema
+- Internacionalização (Português e Inglês)
 - Mapa interativo do clima com marcador na cidade pesquisada
 - Partículas animadas de acordo com a condição climática
 - Relógio local da cidade pesquisada
@@ -31,6 +36,21 @@ Aplicação de clima desenvolvida com React, TypeScript, Vite e Tailwind CSS. Pe
 
 - Leaflet
 - React-Leaflet
+
+### Gráficos
+
+- Recharts
+
+### Internacionalização
+
+- i18next
+- react-i18next
+
+### Backend (API Proxy)
+
+- Node.js
+- Express
+- express-rate-limit
 
 ### Ferramentas de Desenvolvimento
 
@@ -109,14 +129,19 @@ src/
 ├── components/
 │   ├── AirQuality.tsx
 │   ├── ErrorMessage.tsx
+│   ├── FavoriteCities.tsx
 │   ├── ForecastCard.tsx
+│   ├── LanguageSelector.tsx
 │   ├── LoadingSpinner.tsx
 │   ├── LocalClock.tsx
 │   ├── SearchForm.tsx
 │   ├── SearchHistory.tsx
 │   ├── ShareButton.tsx
 │   ├── SkeletonCard.tsx
+│   ├── TemperatureChart.tsx
+│   ├── ThemeToggle.tsx
 │   ├── UnitToggle.tsx
+│   ├── WeatherAlerts.tsx
 │   ├── WeatherCard.tsx
 │   ├── WeatherMap.tsx
 │   ├── WeatherParticles.tsx
@@ -215,6 +240,26 @@ A aplicação inclui suporte a Progressive Web App:
 - **Web App Manifest** — permite a instalação da aplicação como app standalone na tela inicial do dispositivo, com ícone e nome configurados.
 - **Service Worker** — implementa cache de assets estáticos (cache-first) e respostas de API (network-first com fallback para cache), possibilitando uso offline com os últimos dados consultados.
 
+### Gráfico de Temperatura
+
+Gráfico de linha exibindo temperaturas máximas (rosa) e mínimas (azul) dos próximos dias, com tooltip interativo ao passar o mouse. Responsivo e adaptado aos temas claro/escuro.
+
+### Alertas Climáticos
+
+Alertas automáticos baseados nas condições atuais: calor extremo (>38°C), frio extremo (<-5°C), ventos fortes (>15 m/s), tempestades e umidade elevada (>90%). Exibidos como banners coloridos por severidade (baixa, moderada, severa).
+
+### Cidades Favoritas
+
+Permite salvar até 10 cidades como favoritas (estrela ★ no card de clima). Persistidas em localStorage com acesso rápido para nova busca.
+
+### Tema Claro/Escuro
+
+Toggle de tema no canto superior direito (sol/lua). Respeita a preferência do sistema operacional na primeira visita. Persistido em localStorage.
+
+### Internacionalização
+
+Suporte a Português (pt-BR) e Inglês (en). Seletor de idioma (PT | EN) no canto superior direito. Descrições climáticas da API também são traduzidas via parâmetro `lang`.
+
 ## Testes
 
 O projeto utiliza **Vitest** como test runner, configurado com ambiente `jsdom` e APIs de teste globais habilitadas (`describe`, `it`, `expect` disponíveis sem importação explícita).
@@ -255,3 +300,42 @@ Executa os testes em modo watch para feedback contínuo durante o desenvolviment
 | `.test.tsx`                 | Testes unitários e de componente |
 | `.property.test.tsx`        | Testes baseados em propriedades  |
 | `.integration.test.tsx`     | Testes de integração             |
+
+## Backend (API Proxy)
+
+O projeto inclui um backend opcional no diretório `server/` que atua como proxy para a API do OpenWeatherMap, protegendo a chave de API e evitando sua exposição no frontend.
+
+### Endpoints Disponíveis
+
+| Endpoint                    | Descrição                                      |
+|-----------------------------|------------------------------------------------|
+| `/api/health`               | Health check do servidor                       |
+| `/api/weather`              | Clima atual de uma cidade                      |
+| `/api/forecast`             | Previsão estendida de 5 dias                   |
+| `/api/air-quality`          | Índice de qualidade do ar                      |
+| `/api/geocode/reverse`      | Geocodificação reversa (coordenadas → cidade)  |
+| `/api/cep/:cep`             | Busca de cidade por CEP brasileiro             |
+
+### Como Executar
+
+```bash
+cd server
+cp .env.example .env
+# Edite o .env com sua OPENWEATHERMAP_API_KEY
+npm install
+npm run dev
+```
+
+### Integração com o Frontend
+
+Para que o frontend utilize o proxy, defina a variável de ambiente no `.env` do frontend:
+
+```text
+VITE_API_PROXY_URL=http://localhost:3001
+```
+
+Quando essa variável está configurada, o frontend direciona as requisições ao proxy em vez de chamar a API do OpenWeatherMap diretamente. Caso a variável não esteja definida, o frontend utiliza a chave `VITE_API_KEY` diretamente (fallback).
+
+### Rate Limiting e CORS
+
+O servidor aplica rate limiting de **100 requisições por 15 minutos** por IP, configurável via variáveis de ambiente (`RATE_LIMIT_MAX` e `RATE_LIMIT_WINDOW_MS`). O CORS é configurável pela variável `CORS_ORIGIN` (padrão: `*` em desenvolvimento).
