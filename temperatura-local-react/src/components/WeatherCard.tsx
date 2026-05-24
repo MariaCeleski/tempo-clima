@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { WeatherData } from '../types/weather';
 import { getClothingSuggestion, formatTemperature } from '../services/weatherApi';
 import { LocalClock } from './LocalClock';
@@ -19,10 +20,11 @@ function formatTime(timestamp: number, timezone: number): string {
 }
 
 export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, onToggleFavorite }: WeatherCardProps) {
+  const { t } = useTranslation();
   const suggestion = getClothingSuggestion(data.temperature);
 
   return (
-    <article className="animate-fadeInUp rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" aria-label={`Clima atual em ${data.city_name}`}>
+    <article className="animate-fadeInUp rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" aria-label={t('weather.currentAria', { city: data.city_name })}>
       <div className="mb-1 flex items-center justify-center gap-2">
         <h2 className="text-center text-2xl font-bold text-slate-900 dark:text-white">
           {data.city_name}
@@ -31,7 +33,7 @@ export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, 
           <button
             onClick={onToggleFavorite}
             className={`text-xl transition-colors ${isFavorite ? 'text-amber-400' : 'text-slate-300 dark:text-white/30 hover:text-amber-400 dark:hover:text-amber-400'}`}
-            aria-label={isFavorite ? `Remover ${data.city_name} dos favoritos` : `Adicionar ${data.city_name} aos favoritos`}
+            aria-label={isFavorite ? t('favorites.removeAria', { city: data.city_name }) : t('favorites.addAria', { city: data.city_name })}
             aria-pressed={isFavorite}
           >
             {isFavorite ? '★' : '☆'}
@@ -47,40 +49,40 @@ export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, 
       <div className="flex flex-col items-center gap-4">
         <img
           src={data.icon_url}
-          alt={`Condição climática: ${data.description}`}
+          alt={t('weather.conditionAlt', { description: data.description })}
           className="animate-float h-24 w-24"
         />
 
         <div className="grid w-full gap-3 text-center">
-          <p className="text-3xl font-bold text-pink-600 dark:text-pink-300" aria-label={`Temperatura: ${formatTemperature(data.temperature, unit)}`}>
+          <p className="text-3xl font-bold text-pink-600 dark:text-pink-300" aria-label={t('weather.temperatureAria', { temp: formatTemperature(data.temperature, unit) })}>
             {formatTemperature(data.temperature, unit)}
           </p>
           <p className="text-sm text-slate-500 dark:text-white/60">
-            Sensação: {formatTemperature(data.feels_like, unit)}
+            {t('weather.feelsLike', { temp: formatTemperature(data.feels_like, unit) })}
           </p>
           <p className="text-lg capitalize text-purple-600 dark:text-purple-300">
             {data.description}
           </p>
 
           <div className="flex justify-center gap-6">
-            <p className="text-emerald-600 dark:text-emerald-300" aria-label={`Umidade: ${data.humidity} por cento`}>
+            <p className="text-emerald-600 dark:text-emerald-300" aria-label={t('weather.humidity', { value: data.humidity })}>
               💧 {data.humidity}%
             </p>
-            <p className="text-blue-600 dark:text-blue-300" aria-label={`Velocidade do vento: ${data.wind_speed} metros por segundo`}>
+            <p className="text-blue-600 dark:text-blue-300" aria-label={t('weather.wind', { value: data.wind_speed })}>
               💨 {data.wind_speed} m/s
             </p>
           </div>
 
           <div className="flex justify-center gap-6 text-sm text-slate-600 dark:text-white/70">
-            <p aria-label={`Nascer do sol: ${formatTime(data.sunrise, data.timezone)}`}>🌅 {formatTime(data.sunrise, data.timezone)}</p>
-            <p aria-label={`Pôr do sol: ${formatTime(data.sunset, data.timezone)}`}>🌇 {formatTime(data.sunset, data.timezone)}</p>
+            <p aria-label={t('weather.sunrise', { time: formatTime(data.sunrise, data.timezone) })}>🌅 {formatTime(data.sunrise, data.timezone)}</p>
+            <p aria-label={t('weather.sunset', { time: formatTime(data.sunset, data.timezone) })}>🌇 {formatTime(data.sunset, data.timezone)}</p>
           </div>
 
           <LocalClock timezone={data.timezone} />
 
           {airQuality != null && <AirQuality aqi={airQuality} />}
 
-          <div className="mt-2 rounded-lg bg-amber-50 dark:bg-white/5 px-3 py-2 text-sm text-amber-700 dark:text-amber-200" role="note" aria-label="Sugestão de vestimenta">
+          <div className="mt-2 rounded-lg bg-amber-50 dark:bg-white/5 px-3 py-2 text-sm text-amber-700 dark:text-amber-200" role="note" aria-label={t('weather.clothingSuggestion')}>
             {suggestion}
           </div>
         </div>

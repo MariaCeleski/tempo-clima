@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const THEME_KEY = 'temperatura-local-theme';
 
@@ -26,6 +27,7 @@ function applyTheme(theme: 'dark' | 'light') {
 }
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
 
   useEffect(() => {
@@ -58,8 +60,8 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
-      title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+      aria-label={theme === 'dark' ? t('theme.activateLight') : t('theme.activateDark')}
+      title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
       className="fixed top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 dark:border-white/20 bg-white/80 dark:bg-white/10 text-slate-700 dark:text-yellow-300 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-white dark:hover:bg-white/20"
     >
       {theme === 'dark' ? (

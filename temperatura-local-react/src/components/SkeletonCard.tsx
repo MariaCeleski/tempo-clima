@@ -1,7 +1,11 @@
+import { useTranslation } from 'react-i18next';
+
 export function SkeletonCard() {
+  const { t } = useTranslation();
+
   return (
-    <div className="animate-pulse rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" role="status" aria-label="Carregando dados do clima">
-      <span className="sr-only">Carregando dados do clima...</span>
+    <div className="animate-pulse rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" role="status" aria-label={t('skeleton.loading')}>
+      <span className="sr-only">{t('skeleton.loadingText')}</span>
       {/* City name */}
       <div className="mx-auto mb-1 h-7 w-40 rounded-lg bg-slate-200 dark:bg-white/20" />
       {/* State */}

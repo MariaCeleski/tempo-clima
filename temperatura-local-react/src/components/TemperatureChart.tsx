@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   LineChart,
   Line,
@@ -39,6 +40,8 @@ interface CustomTooltipProps {
 }
 
 function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
+  const { t } = useTranslation();
+
   if (!active || !payload || payload.length === 0) return null;
 
   const symbol = unit === 'F' ? '°F' : '°C';
@@ -50,12 +53,12 @@ function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
       <p className="text-xs font-semibold text-slate-900 dark:text-white">{label}</p>
       {maxEntry && (
         <p className="text-xs text-pink-600 dark:text-pink-300">
-          Máx: {maxEntry.value}{symbol}
+          {t('chart.maxLabel', { value: `${maxEntry.value}${symbol}` })}
         </p>
       )}
       {minEntry && (
         <p className="text-xs text-blue-600 dark:text-blue-300">
-          Mín: {minEntry.value}{symbol}
+          {t('chart.minLabel', { value: `${minEntry.value}${symbol}` })}
         </p>
       )}
     </div>
@@ -63,6 +66,8 @@ function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
 }
 
 export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
+  const { t } = useTranslation();
+
   if (forecast.length === 0) return null;
 
   const data: ChartDataPoint[] = forecast.map((day) => ({
@@ -75,21 +80,21 @@ export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
 
   // Build screen reader description
   const srDescription = data
-    .map((d) => `${d.label}: máxima ${d.max}${symbol}, mínima ${d.min}${symbol}`)
+    .map((d) => `${d.label}: ${t('chart.max').toLowerCase()} ${d.max}${symbol}, ${t('chart.min').toLowerCase()} ${d.min}${symbol}`)
     .join('. ');
 
   return (
     <section
       className="animate-fadeInUp mt-4 rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-4 shadow-lg dark:shadow-none backdrop-blur-md"
-      aria-label="Gráfico de temperatura"
+      aria-label={t('chart.sectionAria')}
     >
       {/* Visually hidden description for screen readers */}
       <p className="sr-only">
-        Temperaturas previstas: {srDescription}
+        {t('chart.srDescription', { data: srDescription })}
       </p>
 
       <h2 className="mb-3 text-center text-lg font-semibold text-slate-900 dark:text-white">
-        Temperatura dos próximos dias
+        {t('chart.title')}
       </h2>
 
       <div className="h-[220px] w-full">
@@ -122,7 +127,7 @@ export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
               strokeWidth={2}
               dot={{ r: 4, fill: '#f43f5e' }}
               activeDot={{ r: 6 }}
-              name="Máxima"
+              name={t('chart.max')}
             />
             <Line
               type="monotone"
@@ -131,7 +136,7 @@ export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
               strokeWidth={2}
               dot={{ r: 4, fill: '#3b82f6' }}
               activeDot={{ r: 6 }}
-              name="Mínima"
+              name={t('chart.min')}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -140,11 +145,11 @@ export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
       <div className="mt-2 flex justify-center gap-4 text-xs">
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded-full bg-rose-500" aria-hidden="true" />
-          <span className="text-slate-600 dark:text-white/70">Máxima</span>
+          <span className="text-slate-600 dark:text-white/70">{t('chart.max')}</span>
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded-full bg-blue-500" aria-hidden="true" />
-          <span className="text-slate-600 dark:text-white/70">Mínima</span>
+          <span className="text-slate-600 dark:text-white/70">{t('chart.min')}</span>
         </span>
       </div>
     </section>

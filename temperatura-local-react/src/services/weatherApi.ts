@@ -81,6 +81,14 @@ export function roundToOneDecimal(value: number): number {
 }
 
 /**
+ * Converts i18n language code to OpenWeatherMap lang parameter.
+ */
+export function getApiLang(i18nLang: string): string {
+  if (i18nLang.startsWith('pt')) return 'pt_br';
+  return 'en';
+}
+
+/**
  * Builds the icon URL from an icon code.
  */
 export function buildIconUrl(iconCode: string): string {
@@ -154,16 +162,16 @@ async function fetchStateByCoords(lat: number, lon: number): Promise<string> {
 /**
  * Builds the API URL for a given city name.
  */
-export function buildApiUrl(city: string): string {
+export function buildApiUrl(city: string, lang: string = 'pt_br'): string {
   const apiKey = import.meta.env.VITE_API_KEY;
-  return `${API_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt_br`;
+  return `${API_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${lang}`;
 }
 
 /**
  * Fetches weather data for a given city from OpenWeatherMap API.
  */
-export async function fetchWeather(city: string): Promise<WeatherData> {
-  const url = buildApiUrl(city);
+export async function fetchWeather(city: string, lang: string = 'pt_br'): Promise<WeatherData> {
+  const url = buildApiUrl(city, lang);
 
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10000),
@@ -192,9 +200,9 @@ export async function fetchWeather(city: string): Promise<WeatherData> {
 /**
  * Fetches weather data by geographic coordinates.
  */
-export async function fetchWeatherByCoords(lat: number, lon: number): Promise<WeatherData> {
+export async function fetchWeatherByCoords(lat: number, lon: number, lang: string = 'pt_br'): Promise<WeatherData> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=pt_br`;
+  const url = `${API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
 
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10000),
@@ -274,9 +282,9 @@ function parseForecastResponse(data: ForecastApiResponse): ForecastDay[] {
  * Fetches forecast for a given city.
  * Returns all available days (up to 5) with detailed 3h periods.
  */
-export async function fetchForecast(city: string): Promise<ForecastDay[]> {
+export async function fetchForecast(city: string, lang: string = 'pt_br'): Promise<ForecastDay[]> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${FORECAST_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt_br`;
+  const url = `${FORECAST_BASE_URL}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${lang}`;
 
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10000),
@@ -293,9 +301,9 @@ export async function fetchForecast(city: string): Promise<ForecastDay[]> {
 /**
  * Fetches forecast by coordinates.
  */
-export async function fetchForecastByCoords(lat: number, lon: number): Promise<ForecastDay[]> {
+export async function fetchForecastByCoords(lat: number, lon: number, lang: string = 'pt_br'): Promise<ForecastDay[]> {
   const apiKey = import.meta.env.VITE_API_KEY;
-  const url = `${FORECAST_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=pt_br`;
+  const url = `${FORECAST_BASE_URL}?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=${lang}`;
 
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10000),

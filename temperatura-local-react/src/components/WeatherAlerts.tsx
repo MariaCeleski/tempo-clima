@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { WeatherAlert } from '../types/weather';
 
 interface WeatherAlertsProps {
@@ -12,7 +13,7 @@ const severityConfig = {
     bgClass: 'bg-amber-50 dark:bg-amber-950/30',
     textClass: 'text-amber-800 dark:text-amber-200',
     badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
-    label: 'Baixa',
+    labelKey: 'alerts.low',
   },
   moderate: {
     icon: '🔶',
@@ -20,7 +21,7 @@ const severityConfig = {
     bgClass: 'bg-orange-50 dark:bg-orange-950/30',
     textClass: 'text-orange-800 dark:text-orange-200',
     badgeClass: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200',
-    label: 'Moderada',
+    labelKey: 'alerts.moderate',
   },
   severe: {
     icon: '🚨',
@@ -28,11 +29,12 @@ const severityConfig = {
     bgClass: 'bg-red-50 dark:bg-red-950/30',
     textClass: 'text-red-800 dark:text-red-200',
     badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200',
-    label: 'Severa',
+    labelKey: 'alerts.severe',
   },
 };
 
 export function WeatherAlerts({ alerts }: WeatherAlertsProps) {
+  const { t } = useTranslation();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   if (alerts.length === 0) return null;
@@ -64,7 +66,7 @@ export function WeatherAlerts({ alerts }: WeatherAlertsProps) {
                 {alert.event}
               </span>
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${config.badgeClass}`}>
-                {config.label}
+                {t(config.labelKey)}
               </span>
               <span
                 className={`text-xs transition-transform duration-200 ${config.textClass} ${isExpanded ? 'rotate-180' : ''}`}

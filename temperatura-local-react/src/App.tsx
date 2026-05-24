@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SearchForm } from './components/SearchForm';
 import { WeatherCard } from './components/WeatherCard';
 import { ForecastCard } from './components/ForecastCard';
@@ -11,6 +12,7 @@ import { UnitToggle } from './components/UnitToggle';
 import { ShareButton } from './components/ShareButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { WeatherAlerts } from './components/WeatherAlerts';
+import { LanguageSelector } from './components/LanguageSelector';
 
 const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
 const WeatherParticles = lazy(() => import('./components/WeatherParticles').then(m => ({ default: m.WeatherParticles })));
@@ -25,6 +27,7 @@ import {
   fetchCityByCep,
   fetchAirQuality,
   generateAlerts,
+  getApiLang,
 } from './services/weatherApi';
 import type { WeatherData, ForecastDay, WeatherAlert } from './types/weather';
 
@@ -107,6 +110,7 @@ function getBackgroundClass(iconCode: string | null): string {
 }
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
   const [alerts, setAlerts] = useState<WeatherAlert[]>([]);
@@ -118,6 +122,8 @@ function App() {
   const [clearSignal, setClearSignal] = useState(0);
   const [unit, setUnit] = useState<'C' | 'F'>('C');
 
+  const lang = getApiLang(i18n.language);
+
   // Try geolocation on first load (silently — no error shown if denied)
   useEffect(() => {
     if ('geolocation' in navigator) {
@@ -126,8 +132,8 @@ function App() {
           setIsLoading(true);
           try {
             const [data, forecastData] = await Promise.all([
-              fetchWeatherByCoords(position.coords.latitude, position.coords.longitude),
-              fetchForecastByCoords(position.coords.latitude, position.coords.longitude),
+              fetchWeatherByCoords(position.coords.latitude, position.coords.longitude, lang),
+              fetchForecastByCoords(position.coords.latitude, position.coords.longitude, lang),
             ]);
             setWeatherData(data);
             setForecast(forecastData);
@@ -167,8 +173,8 @@ function App() {
 
     try {
       const [data, forecastData] = await Promise.all([
-        fetchWeather(sanitizedCity),
-        fetchForecast(sanitizedCity),
+        fetchWeather(sanitizedCity, lang),
+        fetchForecast(sanitizedCity, lang),
       ]);
       setWeatherData(data);
       setForecast(forecastData);
@@ -180,12 +186,12 @@ function App() {
     } catch (err) {
       if (err instanceof Error) {
         if (err.name === 'TimeoutError' || err.name === 'AbortError') {
-          setError('A requisição expirou. Tente novamente.');
+          setError(t('error.timeout'));
         } else {
           setError(err.message);
         }
       } else {
-        setError('Erro inesperado. Tente novamente.');
+        setError(t('error.unexpected'));
       }
     } finally {
       setIsLoading(false);
@@ -209,8 +215,8 @@ function App() {
     try {
       const city = await fetchCityByCep(cep);
       const [data, forecastData] = await Promise.all([
-        fetchWeather(city),
-        fetchForecast(city),
+        fetchWeather(city, lang),
+        fetchForecast(city, lang),
       ]);
       setWeatherData(data);
       setForecast(forecastData);
@@ -222,7 +228,7 @@ function App() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Erro inesperado. Tente novamente.');
+        setError(t('error.unexpected'));
       }
     } finally {
       setIsLoading(false);
@@ -231,7 +237,7 @@ function App() {
 
   async function handleGeolocate(): Promise<void> {
     if (!('geolocation' in navigator)) {
-      setError('Geolocalização não disponível no seu navegador.');
+      setError(t('error.geoUnavailable'));
       return;
     }
 
@@ -246,8 +252,8 @@ function App() {
       async (position) => {
         try {
           const [data, forecastData] = await Promise.all([
-            fetchWeatherByCoords(position.coords.latitude, position.coords.longitude),
-            fetchForecastByCoords(position.coords.latitude, position.coords.longitude),
+            fetchWeatherByCoords(position.coords.latitude, position.coords.longitude, lang),
+            fetchForecastByCoords(position.coords.latitude, position.coords.longitude, lang),
           ]);
           setWeatherData(data);
           setForecast(forecastData);
@@ -259,7 +265,7 @@ function App() {
           if (err instanceof Error) {
             setError(err.message);
           } else {
-            setError('Erro ao obter clima da localização.');
+            setError(t('error.geoGeneric'));
           }
         } finally {
           setIsLoading(false);
@@ -267,14 +273,11 @@ function App() {
       },
       (error) => {
         if (error.code === 1) {
-          // PERMISSION_DENIED
-          setError('Localização bloqueada. Clique no ícone de cadeado na barra de endereço do navegador e permita o acesso à localização.');
+          setError(t('error.geoBlocked'));
         } else if (error.code === 2) {
-          // POSITION_UNAVAILABLE
-          setError('Não foi possível determinar sua localização. Verifique se o GPS está ativado.');
+          setError(t('error.geoPosition'));
         } else {
-          // TIMEOUT or unknown
-          setError('A busca por localização demorou demais. Tente novamente.');
+          setError(t('error.geoTimeout'));
         }
         setIsLoading(false);
       },
@@ -325,12 +328,15 @@ function App() {
       {/* Theme toggle */}
       <ThemeToggle />
 
+      {/* Language selector */}
+      <LanguageSelector />
+
       {/* Skip to content link for keyboard navigation */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-900 focus:font-semibold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
       >
-        Pular para o conteúdo principal
+        {t('app.skipToContent')}
       </a>
 
       <Suspense fallback={null}>
@@ -342,11 +348,11 @@ function App() {
       >
         <div className="w-full max-w-md">
           <h1 className="mb-6 text-center text-3xl font-bold text-slate-900 dark:text-white">
-            CLIMATEMP
+            {t('app.title')}
           </h1>
 
           <h1 className="mb-8 text-center text-1xl font-bold text-slate-900 dark:text-white">
-            Mostrando o clima e a temperatura na região desejada
+            {t('app.subtitle')}
           </h1>
 
           <SearchForm
@@ -386,7 +392,7 @@ function App() {
                   isFavorite={favorites.some((f) => f.toLowerCase() === weatherData.city_name.toLowerCase())}
                   onToggleFavorite={() => toggleFavorite(weatherData.city_name)}
                 />
-                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label="Carregando mapa" />}>
+                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label={t('skeleton.loadingMap')} />}>
                   <WeatherMap
                     lat={weatherData.lat}
                     lon={weatherData.lon}
