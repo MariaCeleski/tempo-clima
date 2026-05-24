@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { SearchForm } from './components/SearchForm';
 import { WeatherCard } from './components/WeatherCard';
 import { ForecastCard } from './components/ForecastCard';
@@ -7,8 +7,9 @@ import { ErrorMessage } from './components/ErrorMessage';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UnitToggle } from './components/UnitToggle';
 import { ShareButton } from './components/ShareButton';
-import { WeatherMap } from './components/WeatherMap';
-import { WeatherParticles } from './components/WeatherParticles';
+
+const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
+const WeatherParticles = lazy(() => import('./components/WeatherParticles').then(m => ({ default: m.WeatherParticles })));
 import {
   validateInput,
   validateCep,
@@ -261,7 +262,9 @@ function App() {
 
   return (
     <div className={`relative min-h-screen bg-gradient-to-br transition-colors duration-700 ${bgClass}`}>
-      <WeatherParticles iconCode={weatherData?.icon_code ?? null} />
+      <Suspense fallback={null}>
+        <WeatherParticles iconCode={weatherData?.icon_code ?? null} />
+      </Suspense>
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center">
         <div className="w-full max-w-md">
           <h1 className="mb-6 text-center text-4xl font-bold text-white">
@@ -291,12 +294,14 @@ function App() {
                   <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                 </div>
                 <WeatherCard data={weatherData} unit={unit} airQuality={airQuality} />
-                <WeatherMap
-                  lat={weatherData.lat}
-                  lon={weatherData.lon}
-                  cityName={weatherData.city_name}
-                  temperature={weatherData.temperature}
-                />
+                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-white/5" />}>
+                  <WeatherMap
+                    lat={weatherData.lat}
+                    lon={weatherData.lon}
+                    cityName={weatherData.city_name}
+                    temperature={weatherData.temperature}
+                  />
+                </Suspense>
                 <ForecastCard forecast={forecast} unit={unit} />
               </>
             )}
