@@ -10,6 +10,7 @@ import { SkeletonCard } from './components/SkeletonCard';
 import { UnitToggle } from './components/UnitToggle';
 import { ShareButton } from './components/ShareButton';
 import { ThemeToggle } from './components/ThemeToggle';
+import { WeatherAlerts } from './components/WeatherAlerts';
 
 const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
 const WeatherParticles = lazy(() => import('./components/WeatherParticles').then(m => ({ default: m.WeatherParticles })));
@@ -23,8 +24,9 @@ import {
   fetchForecastByCoords,
   fetchCityByCep,
   fetchAirQuality,
+  generateAlerts,
 } from './services/weatherApi';
-import type { WeatherData, ForecastDay } from './types/weather';
+import type { WeatherData, ForecastDay, WeatherAlert } from './types/weather';
 
 const HISTORY_KEY = 'temperatura-local-history';
 const FAVORITES_KEY = 'temperatura-local-favorites';
@@ -107,6 +109,7 @@ function getBackgroundClass(iconCode: string | null): string {
 function App() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
+  const [alerts, setAlerts] = useState<WeatherAlert[]>([]);
   const [airQuality, setAirQuality] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -128,6 +131,7 @@ function App() {
             ]);
             setWeatherData(data);
             setForecast(forecastData);
+            setAlerts(generateAlerts(data));
             setHistory(addToHistory(data.city_name, loadHistory()));
             setClearSignal((c) => c + 1);
             fetchAirQuality(data.lat, data.lon).then(setAirQuality);
@@ -158,6 +162,7 @@ function App() {
     setError(null);
     setWeatherData(null);
     setForecast([]);
+    setAlerts([]);
     setAirQuality(null);
 
     try {
@@ -167,6 +172,7 @@ function App() {
       ]);
       setWeatherData(data);
       setForecast(forecastData);
+      setAlerts(generateAlerts(data));
       setHistory(addToHistory(data.city_name, history));
       setClearSignal((c) => c + 1);
       // Fetch AQI in background (non-blocking)
@@ -197,6 +203,7 @@ function App() {
     setError(null);
     setWeatherData(null);
     setForecast([]);
+    setAlerts([]);
     setAirQuality(null);
 
     try {
@@ -207,6 +214,7 @@ function App() {
       ]);
       setWeatherData(data);
       setForecast(forecastData);
+      setAlerts(generateAlerts(data));
       setHistory(addToHistory(data.city_name, history));
       setClearSignal((c) => c + 1);
       fetchAirQuality(data.lat, data.lon).then(setAirQuality);
@@ -231,6 +239,7 @@ function App() {
     setError(null);
     setWeatherData(null);
     setForecast([]);
+    setAlerts([]);
     setAirQuality(null);
 
     navigator.geolocation.getCurrentPosition(
@@ -242,6 +251,7 @@ function App() {
           ]);
           setWeatherData(data);
           setForecast(forecastData);
+          setAlerts(generateAlerts(data));
           setHistory(addToHistory(data.city_name, history));
           setClearSignal((c) => c + 1);
           fetchAirQuality(data.lat, data.lon).then(setAirQuality);
@@ -331,8 +341,12 @@ function App() {
         className="relative z-10 flex min-h-screen flex-col items-center justify-start px-4 py-8 sm:justify-center"
       >
         <div className="w-full max-w-md">
-          <h1 className="mb-6 text-center text-4xl font-bold text-slate-900 dark:text-white">
-            Temperatura Local
+          <h1 className="mb-6 text-center text-3xl font-bold text-slate-900 dark:text-white">
+            CLIMATEMP
+          </h1>
+
+          <h1 className="mb-8 text-center text-1xl font-bold text-slate-900 dark:text-white">
+            Mostrando o clima e a temperatura na região desejada
           </h1>
 
           <SearchForm
@@ -360,6 +374,7 @@ function App() {
             {isLoading && <SkeletonCard />}
             {weatherData && !isLoading && (
               <>
+                <WeatherAlerts alerts={alerts} />
                 <div className="mb-3 flex justify-between items-center">
                   <ShareButton data={weatherData} />
                   <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />

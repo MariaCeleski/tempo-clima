@@ -1,4 +1,4 @@
-import type { WeatherData, ForecastItem, ForecastDay } from '../types/weather';
+import type { WeatherData, ForecastItem, ForecastDay, WeatherAlert } from '../types/weather';
 
 const API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
@@ -415,5 +415,96 @@ export async function fetchAirQuality(lat: number, lon: number): Promise<number 
     return data?.list?.[0]?.main?.aqi ?? null;
   } catch {
     return null;
+  }
+}
+
+
+/**
+ * Generates synthetic weather alerts based on current weather data.
+ * Used as a fallback since the free API tier may not include alerts.
+ */
+export function generateAlerts(data: WeatherData): WeatherAlert[] {
+  const alerts: WeatherAlert[] = [];
+
+  if (data.temperature > 38) {
+    alerts.push({
+      event: 'Calor extremo',
+      description: `Temperatura atual de ${data.temperature}°C. Risco de insolação e desidratação. Mantenha-se hidratado e evite exposição ao sol.`,
+      severity: 'severe',
+    });
+  }
+
+  if (data.temperature < -5) {
+    alerts.push({
+      event: 'Frio extremo',
+      description: `Temperatura atual de ${data.temperature}°C. Risco de hipotermia. Use roupas adequadas e evite exposição prolongada ao frio.`,
+      severity: 'severe',
+    });
+  }
+
+  if (data.wind_speed > 15) {
+    alerts.push({
+      event: 'Ventos fortes',
+      description: `Velocidade do vento de ${data.wind_speed} m/s. Cuidado com objetos soltos e estruturas frágeis.`,
+      severity: 'moderate',
+    });
+  }
+
+  if (data.description.toLowerCase().includes('thunderstorm') || data.description.toLowerCase().includes('trovoada')) {
+    alerts.push({
+      event: 'Tempestade',
+      description: 'Condições de tempestade detectadas. Evite áreas abertas e procure abrigo.',
+      severity: 'moderate',
+    });
+  }
+
+  if (data.humidity > 90) {
+    alerts.push({
+      event: 'Umidade elevada',
+      description: `Umidade relativa de ${data.humidity}%. Pode causar desconforto respiratório em pessoas sensíveis.`,
+      severity: 'low',
+    });
+  }
+
+  return alerts;
+}
+
+/**
+ * Fetches weather alerts from the OpenWeatherMap One Call API 3.0.
+ * Falls back to generating synthetic alerts from standard weather data.
+ */
+export async function fetchWeatherAlerts(lat: number, lon: number): Promise<WeatherAlert[]> {
+  try {
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily&appid=${apiKey}`;
+
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+
+    if (data.alerts && Array.isArray(data.alerts) && data.alerts.length > 0) {
+      return data.alerts.map((alert: { event: string; description: string; start: number; end: number }) => {
+        const severity: WeatherAlert['severity'] =
+          alert.event.toLowerCase().includes('extreme') || alert.event.toLowerCase().includes('warning')
+            ? 'severe'
+            : alert.event.toLowerCase().includes('watch') || alert.event.toLowerCase().includes('advisory')
+              ? 'moderate'
+              : 'low';
+
+        return {
+          event: alert.event,
+          description: alert.description,
+          severity,
+          start: alert.start,
+          end: alert.end,
+        };
+      });
+    }
+
+    return [];
+  } catch {
+    return [];
   }
 }

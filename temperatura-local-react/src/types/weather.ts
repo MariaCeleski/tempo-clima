@@ -41,6 +41,14 @@ export interface ForecastDay {
   periods: ForecastItem[];  // all 3h periods for this day
 }
 
+export interface WeatherAlert {
+  event: string;
+  description: string;
+  severity: 'low' | 'moderate' | 'severe';
+  start?: number;
+  end?: number;
+}
+
 export interface ApiError {
   message: string;
 }
