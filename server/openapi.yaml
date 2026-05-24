@@ -1,0 +1,581 @@
+openapi: 3.0.3
+info:
+  title: Temperatura Local - API Proxy
+  description: API proxy que protege a chave do OpenWeatherMap e centraliza chamadas a APIs externas (OpenWeatherMap e ViaCEP).
+  version: 1.0.0
+  contact:
+    name: Maria Celeski
+    url: https://github.com/MariaCeleski/tempo-clima
+
+servers:
+  - url: http://localhost:3001
+    description: Servidor de desenvolvimento local
+
+paths:
+  /api/health:
+    get:
+      summary: Health check do servidor
+      description: Retorna o status do servidor e timestamp atual.
+      operationId: getHealth
+      responses:
+        "200":
+          description: Servidor funcionando normalmente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+                timestamp: "2026-05-24T20:00:00.000Z"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+
+  /api/weather:
+    get:
+      summary: Clima atual de uma cidade ou coordenadas
+      description: |
+        Proxy para o endpoint /data/2.5/weather do OpenWeatherMap.
+        Aceita busca por nome de cidade (q) ou coordenadas (lat/lon).
+        Quando ambos são fornecidos, o parâmetro q tem prioridade.
+      operationId: getWeather
+      parameters:
+        - $ref: "#/components/parameters/CityQuery"
+        - $ref: "#/components/parameters/Latitude"
+        - $ref: "#/components/parameters/Longitude"
+        - $ref: "#/components/parameters/Units"
+        - $ref: "#/components/parameters/Lang"
+      responses:
+        "200":
+          description: Dados meteorológicos retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeatherResponse"
+              example:
+                name: São Paulo
+                coord:
+                  lat: -23.55
+                  lon: -46.63
+                main:
+                  temp: 25.3
+                  feels_like: 26.1
+                  humidity: 72
+                weather:
+                  - description: nublado
+                    icon: 04d
+                wind:
+                  speed: 3.5
+                sys:
+                  sunrise: 1700000000
+                  sunset: 1700040000
+                  country: BR
+                timezone: -10800
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          $ref: "#/components/responses/BadGateway"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
+
+  /api/forecast:
+    get:
+      summary: Previsão estendida de 5 dias
+      description: |
+        Proxy para o endpoint /data/2.5/forecast do OpenWeatherMap.
+        Aceita busca por nome de cidade (q) ou coordenadas (lat/lon).
+        Quando ambos são fornecidos, o parâmetro q tem prioridade.
+      operationId: getForecast
+      parameters:
+        - $ref: "#/components/parameters/CityQuery"
+        - $ref: "#/components/parameters/Latitude"
+        - $ref: "#/components/parameters/Longitude"
+        - $ref: "#/components/parameters/Units"
+        - $ref: "#/components/parameters/Lang"
+      responses:
+        "200":
+          description: Dados de previsão retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForecastResponse"
+              example:
+                list:
+                  - dt: 1700100000
+                    main:
+                      temp: 24.5
+                      temp_min: 22.0
+                      temp_max: 26.0
+                      feels_like: 25.0
+                      humidity: 60
+                    weather:
+                      - description: céu limpo
+                        icon: 01d
+                    wind:
+                      speed: 2.5
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          $ref: "#/components/responses/BadGateway"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
+
+  /api/air-quality:
+    get:
+      summary: Índice de qualidade do ar
+      description: |
+        Proxy para o endpoint /data/2.5/air_pollution do OpenWeatherMap.
+        Requer coordenadas geográficas (lat e lon).
+      operationId: getAirQuality
+      parameters:
+        - $ref: "#/components/parameters/LatitudeRequired"
+        - $ref: "#/components/parameters/LongitudeRequired"
+      responses:
+        "200":
+          description: Dados de qualidade do ar retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AirQualityResponse"
+              example:
+                list:
+                  - main:
+                      aqi: 2
+                    components:
+                      co: 230.31
+                      no2: 5.13
+                      o3: 68.52
+                      pm2_5: 8.1
+                      pm10: 12.4
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          $ref: "#/components/responses/BadGateway"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
+
+  /api/geocode/reverse:
+    get:
+      summary: Geocodificação reversa (coordenadas para cidade)
+      description: |
+        Proxy para o endpoint /geo/1.0/reverse do OpenWeatherMap.
+        Requer coordenadas geográficas (lat e lon). Retorna no máximo 1 resultado.
+      operationId: getReverseGeocode
+      parameters:
+        - $ref: "#/components/parameters/LatitudeRequired"
+        - $ref: "#/components/parameters/LongitudeRequired"
+      responses:
+        "200":
+          description: Dados de geocodificação retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeocodeResponse"
+              example:
+                - name: São Paulo
+                  state: São Paulo
+                  country: BR
+                  lat: -23.55
+                  lon: -46.63
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          $ref: "#/components/responses/BadGateway"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
+
+  /api/cep/{cep}:
+    get:
+      summary: Busca de cidade por CEP brasileiro
+      description: |
+        Proxy para a API ViaCEP. Aceita CEPs com exatamente 8 dígitos.
+        Retorna dados de endereço incluindo cidade (localidade).
+      operationId: getCep
+      parameters:
+        - name: cep
+          in: path
+          required: true
+          description: CEP brasileiro com exatamente 8 dígitos (sem hífen)
+          schema:
+            type: string
+            pattern: "^\\d{8}$"
+            example: "01001000"
+      responses:
+        "200":
+          description: Dados do CEP retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CepResponse"
+              example:
+                cep: "01001-000"
+                logradouro: Praça da Sé
+                complemento: lado ímpar
+                bairro: Sé
+                localidade: São Paulo
+                uf: SP
+                ibge: "3550308"
+                gia: "1004"
+                ddd: "11"
+                siafi: "7107"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/CepNotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          $ref: "#/components/responses/BadGateway"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
+
+components:
+  parameters:
+    CityQuery:
+      name: q
+      in: query
+      required: false
+      description: Nome da cidade (1-100 caracteres, sem caracteres de controle)
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+        example: São Paulo
+
+    Latitude:
+      name: lat
+      in: query
+      required: false
+      description: Latitude (-90 a 90)
+      schema:
+        type: number
+        minimum: -90
+        maximum: 90
+        example: -23.55
+
+    Longitude:
+      name: lon
+      in: query
+      required: false
+      description: Longitude (-180 a 180)
+      schema:
+        type: number
+        minimum: -180
+        maximum: 180
+        example: -46.63
+
+    LatitudeRequired:
+      name: lat
+      in: query
+      required: true
+      description: Latitude (-90 a 90)
+      schema:
+        type: number
+        minimum: -90
+        maximum: 90
+        example: -23.55
+
+    LongitudeRequired:
+      name: lon
+      in: query
+      required: true
+      description: Longitude (-180 a 180)
+      schema:
+        type: number
+        minimum: -180
+        maximum: 180
+        example: -46.63
+
+    Units:
+      name: units
+      in: query
+      required: false
+      description: Sistema de unidades para temperatura
+      schema:
+        type: string
+        enum:
+          - metric
+          - imperial
+          - standard
+        default: metric
+
+    Lang:
+      name: lang
+      in: query
+      required: false
+      description: Idioma das descrições climáticas
+      schema:
+        type: string
+        example: pt_br
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+        timestamp:
+          type: string
+          format: date-time
+
+    WeatherResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        coord:
+          type: object
+          properties:
+            lat:
+              type: number
+            lon:
+              type: number
+        main:
+          type: object
+          properties:
+            temp:
+              type: number
+            feels_like:
+              type: number
+            humidity:
+              type: integer
+        weather:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              icon:
+                type: string
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+        sys:
+          type: object
+          properties:
+            sunrise:
+              type: integer
+            sunset:
+              type: integer
+            country:
+              type: string
+        timezone:
+          type: integer
+
+    ForecastResponse:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            type: object
+            properties:
+              dt:
+                type: integer
+              main:
+                type: object
+                properties:
+                  temp:
+                    type: number
+                  temp_min:
+                    type: number
+                  temp_max:
+                    type: number
+                  feels_like:
+                    type: number
+                  humidity:
+                    type: integer
+              weather:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    description:
+                      type: string
+                    icon:
+                      type: string
+              wind:
+                type: object
+                properties:
+                  speed:
+                    type: number
+
+    AirQualityResponse:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            type: object
+            properties:
+              main:
+                type: object
+                properties:
+                  aqi:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+              components:
+                type: object
+                properties:
+                  co:
+                    type: number
+                  no2:
+                    type: number
+                  o3:
+                    type: number
+                  pm2_5:
+                    type: number
+                  pm10:
+                    type: number
+
+    GeocodeResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          state:
+            type: string
+          country:
+            type: string
+          lat:
+            type: number
+          lon:
+            type: number
+
+    CepResponse:
+      type: object
+      properties:
+        cep:
+          type: string
+        logradouro:
+          type: string
+        complemento:
+          type: string
+        bairro:
+          type: string
+        localidade:
+          type: string
+        uf:
+          type: string
+        ibge:
+          type: string
+        gia:
+          type: string
+        ddd:
+          type: string
+        siafi:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Mensagem descritiva do erro
+
+  responses:
+    ValidationError:
+      description: Parâmetros de entrada inválidos
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: 'Parameter "lat" must be a valid number between -90 and 90'
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: Not found
+
+    CepNotFound:
+      description: CEP não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: CEP not found
+
+    RateLimitExceeded:
+      description: Limite de requisições excedido (100 req/15min por IP)
+      headers:
+        Retry-After:
+          description: Segundos até o reset do limite
+          schema:
+            type: integer
+        X-RateLimit-Limit:
+          description: Máximo de requisições permitidas
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requisições restantes na janela atual
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Timestamp UTC (epoch seconds) do reset da janela
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: "Too many requests, please try again later."
+
+    BadGateway:
+      description: Erro no serviço externo (OpenWeatherMap ou ViaCEP)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: External service error
+
+    ServiceUnavailable:
+      description: Serviço externo temporariamente indisponível (erro de autenticação mascarado)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: Weather service temporarily unavailable
+
+    GatewayTimeout:
+      description: Timeout na comunicação com serviço externo (>15s)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message: External service timeout
