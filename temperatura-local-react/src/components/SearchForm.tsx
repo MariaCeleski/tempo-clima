@@ -16,7 +16,7 @@ interface CitySuggestion {
 }
 
 async function fetchCitySuggestions(query: string): Promise<CitySuggestion[]> {
-  if (query.trim().length < 2) return [];
+  if (query.trim().length < 3) return [];
   try {
     const apiKey = import.meta.env.VITE_API_KEY;
     const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`;
@@ -53,7 +53,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
 
   // Debounced autocomplete for city input
   useEffect(() => {
-    if (mode !== 'city' || city.trim().length < 2) {
+    if (mode !== 'city' || city.trim().length < 3) {
       setSuggestions([]);
       return;
     }
@@ -150,7 +150,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
                   className="w-full min-h-[48px] rounded-lg border border-slate-300 dark:border-white/25 bg-white dark:bg-white/10 px-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
                 {showSuggestions && suggestions.length > 0 && (
-                  <ul className="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-slate-800 shadow-lg overflow-hidden">
+                  <ul className="absolute z-50 mt-1 w-full rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-slate-800 shadow-lg overflow-hidden max-h-60 overflow-y-auto">
                     {suggestions.map((s, i) => (
                       <li key={`${s.name}-${s.country}-${i}`}>
                         <button
