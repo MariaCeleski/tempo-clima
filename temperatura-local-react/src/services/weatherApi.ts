@@ -581,3 +581,62 @@ export async function fetchWeatherAlerts(lat: number, lon: number): Promise<Weat
     return [];
   }
 }
+
+/**
+ * Estimates a synthetic UV index based on weather conditions and time of day.
+ * Uses the sun position (relative to solar noon) and weather condition to approximate UV.
+ *
+ * @param data - Current weather data including sunrise, sunset, timezone, and icon_code
+ * @returns Estimated UV index (0-11 scale)
+ */
+export function estimateUVIndex(data: WeatherData): number {
+  const now = Math.floor(Date.now() / 1000);
+  const localNow = now + data.timezone;
+  const localSunrise = data.sunrise + data.timezone;
+  const localSunset = data.sunset + data.timezone;
+
+  // Nighttime: UV is 0
+  if (localNow < localSunrise || localNow > localSunset) {
+    return 0;
+  }
+
+  // Calculate solar noon and time-of-day factor (peaks at solar noon)
+  const solarNoon = (localSunrise + localSunset) / 2;
+  const halfDay = (localSunset - localSunrise) / 2;
+  const distanceFromNoon = Math.abs(localNow - solarNoon);
+  const timeFactor = Math.max(0, 1 - (distanceFromNoon / halfDay));
+
+  // Base UV from weather condition (icon_code from OpenWeatherMap)
+  const icon = data.icon_code.replace(/[dn]$/, ''); // Remove day/night suffix
+  let conditionBase: number;
+
+  switch (icon) {
+    case '01': // clear sky
+      conditionBase = 10;
+      break;
+    case '02': // few clouds
+      conditionBase = 8;
+      break;
+    case '03': // scattered clouds
+      conditionBase = 6;
+      break;
+    case '04': // broken/overcast clouds
+      conditionBase = 4;
+      break;
+    case '09': // shower rain
+    case '10': // rain
+    case '11': // thunderstorm
+      conditionBase = 2;
+      break;
+    case '13': // snow
+    case '50': // mist/fog
+      conditionBase = 1;
+      break;
+    default:
+      conditionBase = 5;
+  }
+
+  // UV = condition base × time factor, rounded to nearest integer
+  const uv = Math.round(conditionBase * timeFactor);
+  return Math.min(11, Math.max(0, uv));
+}

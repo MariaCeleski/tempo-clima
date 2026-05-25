@@ -93,5 +93,13 @@
   "lastUpdated.now": "Updated just now",
   "lastUpdated.minutes": "Updated {{count}} min ago",
   "lastUpdated.hour": "Updated 1 hour ago",
-  "lastUpdated.hours": "Updated {{count}} hours ago"
+  "lastUpdated.hours": "Updated {{count}} hours ago",
+  "uv.low": "Low",
+  "uv.moderate": "Moderate",
+  "uv.high": "High",
+  "uv.veryHigh": "Very High",
+  "uv.extreme": "Extreme",
+  "uv.protection.low": "No protection needed",
+  "uv.protection.moderate": "Wear sunscreen and sunglasses",
+  "uv.protection.high": "Avoid sun exposure, use SPF 30+ sunscreen"
 }

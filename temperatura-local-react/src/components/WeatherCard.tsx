@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import type { WeatherData } from '../types/weather';
-import { getClothingSuggestion, formatTemperature } from '../services/weatherApi';
+import { getClothingSuggestion, formatTemperature, estimateUVIndex } from '../services/weatherApi';
 import { LocalClock } from './LocalClock';
 import { AirQuality } from './AirQuality';
+import { UVIndex } from './UVIndex';
 
 interface WeatherCardProps {
   data: WeatherData;
@@ -22,6 +23,11 @@ function formatTime(timestamp: number, timezone: number): string {
 export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, onToggleFavorite }: WeatherCardProps) {
   const { t } = useTranslation();
   const suggestion = getClothingSuggestion(data.temperature);
+
+  // Show UV only during daytime
+  const now = Math.floor(Date.now() / 1000);
+  const isDaytime = now >= data.sunrise && now <= data.sunset;
+  const uvIndex = isDaytime ? estimateUVIndex(data) : null;
 
   return (
     <article className="animate-fadeInUp rounded-2xl border border-slate-200 dark:border-white/25 bg-white/80 dark:bg-white/10 p-6 shadow-lg dark:shadow-none backdrop-blur-md" aria-label={t('weather.currentAria', { city: data.city_name })}>
@@ -81,6 +87,8 @@ export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, 
           <LocalClock timezone={data.timezone} />
 
           {airQuality != null && <AirQuality aqi={airQuality} />}
+
+          {uvIndex != null && <UVIndex uvIndex={uvIndex} />}
 
           <div className="mt-2 rounded-lg bg-amber-50 dark:bg-white/5 px-3 py-2 text-sm text-amber-700 dark:text-amber-200" role="note" aria-label={t('weather.clothingSuggestion')}>
             {suggestion}

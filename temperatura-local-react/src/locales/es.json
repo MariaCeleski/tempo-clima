@@ -93,5 +93,13 @@
   "lastUpdated.now": "Actualizado ahora",
   "lastUpdated.minutes": "Actualizado hace {{count}} min",
   "lastUpdated.hour": "Actualizado hace 1 hora",
-  "lastUpdated.hours": "Actualizado hace {{count}} horas"
+  "lastUpdated.hours": "Actualizado hace {{count}} horas",
+  "uv.low": "Bajo",
+  "uv.moderate": "Moderado",
+  "uv.high": "Alto",
+  "uv.veryHigh": "Muy Alto",
+  "uv.extreme": "Extremo",
+  "uv.protection.low": "No se necesita protección",
+  "uv.protection.moderate": "Use protector solar y gafas de sol",
+  "uv.protection.high": "Evite la exposición al sol, use protector solar SPF 30+"
 }
