@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface SearchFormProps {
@@ -9,21 +9,77 @@ interface SearchFormProps {
   clearSignal?: number;
 }
 
+interface CitySuggestion {
+  name: string;
+  state?: string;
+  country: string;
+}
+
+async function fetchCitySuggestions(query: string): Promise<CitySuggestion[]> {
+  if (query.trim().length < 2) return [];
+  try {
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.map((item: { name: string; state?: string; country: string }) => ({
+      name: item.name,
+      state: item.state,
+      country: item.country,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, clearSignal }: SearchFormProps) {
   const { t } = useTranslation();
   const [city, setCity] = useState('');
   const [cep, setCep] = useState('');
   const [mode, setMode] = useState<'city' | 'cep'>('city');
+  const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (clearSignal) {
       setCity('');
       setCep('');
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
   }, [clearSignal]);
 
+  // Debounced autocomplete for city input
+  useEffect(() => {
+    if (mode !== 'city' || city.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const results = await fetchCitySuggestions(city);
+      setSuggestions(results);
+      setShowSuggestions(results.length > 0);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [city, mode]);
+
+  function handleSelectSuggestion(suggestion: CitySuggestion) {
+    setCity(suggestion.name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    onSearch(suggestion.name);
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setShowSuggestions(false);
     if (mode === 'cep') {
       onSearchByCep(cep);
     } else {
@@ -34,6 +90,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       e.preventDefault();
+      setShowSuggestions(false);
       if (mode === 'cep') {
         onSearchByCep(cep);
       } else {
@@ -79,16 +136,37 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
               <label htmlFor="city-input" className="text-sm font-medium text-slate-600 dark:text-white/80">
                 {t('search.cityLabel')}
               </label>
-              <input
-                id="city-input"
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={t('search.cityPlaceholder')}
-                autoComplete="off"
-                className="min-h-[48px] rounded-lg border border-slate-300 dark:border-white/25 bg-white dark:bg-white/10 px-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
-              />
+              <div className="relative">
+                <input
+                  id="city-input"
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  placeholder={t('search.cityPlaceholder')}
+                  autoComplete="off"
+                  className="w-full min-h-[48px] rounded-lg border border-slate-300 dark:border-white/25 bg-white dark:bg-white/10 px-4 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <ul className="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-slate-800 shadow-lg overflow-hidden">
+                    {suggestions.map((s, i) => (
+                      <li key={`${s.name}-${s.country}-${i}`}>
+                        <button
+                          type="button"
+                          onMouseDown={() => handleSelectSuggestion(s)}
+                          className="w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-white/90 hover:bg-pink-50 dark:hover:bg-white/10 transition-colors"
+                        >
+                          <span className="font-medium">{s.name}</span>
+                          {s.state && <span className="text-slate-400 dark:text-white/40">, {s.state}</span>}
+                          <span className="text-slate-400 dark:text-white/40"> — {s.country}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </>
           ) : (
             <>
