@@ -391,7 +391,20 @@ function App() {
                 <WeatherAlerts alerts={alerts} />
                 <div className="mb-3 flex justify-between items-center">
                   <ShareButton data={weatherData} />
-                  <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSearch(weatherData.city_name)}
+                      disabled={isLoading}
+                      aria-label={t('refresh.aria') || 'Atualizar dados'}
+                      title={t('refresh.title') || 'Atualizar'}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 dark:border-white/20 bg-white/80 dark:bg-white/5 text-slate-600 dark:text-white/70 transition-all hover:bg-white dark:hover:bg-white/15 hover:text-slate-900 dark:hover:text-white disabled:opacity-50"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
+                    <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
+                  </div>
                 </div>
                 <WeatherCard
                   data={weatherData}
@@ -418,7 +431,7 @@ function App() {
         </div>
 
         <footer className="mt-12 pb-4 text-center text-xs text-slate-400 dark:text-white/30">
-          <p>© {new Date().getFullYear()} Temperatura Local — Maria Celeski</p>
+          <p>© {new Date().getFullYear()} ClimaTemp— Maria Celeski</p>
           <p className="mt-1">Todos os direitos reservados</p>
         </footer>
       </main>

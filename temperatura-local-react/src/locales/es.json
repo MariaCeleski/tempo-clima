@@ -2,7 +2,6 @@
   "app.title": "CLIMATEMP",
   "app.subtitle": "Mostrando el clima y la temperatura en la ubicación deseada",
   "app.skipToContent": "Saltar al contenido principal",
-
   "search.label": "Buscar clima",
   "search.modeLabel": "Modo de búsqueda",
   "search.city": "Ciudad",
@@ -17,19 +16,16 @@
   "search.formLabel": "Formulario de búsqueda de clima",
   "search.geolocate": "Usar mi ubicación",
   "search.geolocateAria": "Usar mi ubicación para buscar el clima",
-
   "history.title": "Búsquedas recientes",
   "history.clear": "Limpiar",
   "history.clearAria": "Limpiar historial de búsquedas",
   "history.searchAria": "Buscar clima en {{city}}",
-
   "favorites.title": "Favoritas",
   "favorites.clear": "Limpiar favoritas",
   "favorites.clearAria": "Limpiar favoritas",
   "favorites.searchAria": "Buscar clima en {{city}}",
   "favorites.removeAria": "Eliminar {{city}} de favoritas",
   "favorites.addAria": "Agregar {{city}} a favoritas",
-
   "weather.currentAria": "Clima actual en {{city}}",
   "weather.feelsLike": "Sensación: {{temp}}",
   "weather.humidity": "Humedad: {{value}} por ciento",
@@ -39,7 +35,6 @@
   "weather.temperatureAria": "Temperatura: {{temp}}",
   "weather.conditionAlt": "Condición climática: {{description}}",
   "weather.clothingSuggestion": "Sugerencia de vestimenta",
-
   "forecast.title": "Próximos días",
   "forecast.sectionAria": "Pronóstico de los próximos días",
   "forecast.previousDays": "Días anteriores",
@@ -51,7 +46,6 @@
   "forecast.pageAria": "Página {{current}} de {{total}}",
   "forecast.paginationAria": "Páginas del pronóstico",
   "forecast.forecastAlt": "Pronóstico: {{description}}",
-
   "chart.title": "Temperatura de los próximos días",
   "chart.sectionAria": "Gráfico de temperatura",
   "chart.srDescription": "Temperaturas previstas: {{data}}",
@@ -59,27 +53,22 @@
   "chart.min": "Mínima",
   "chart.maxLabel": "Máx: {{value}}",
   "chart.minLabel": "Mín: {{value}}",
-
   "alerts.low": "Baja",
   "alerts.moderate": "Moderada",
   "alerts.severe": "Severa",
-
   "theme.light": "Tema claro",
   "theme.dark": "Tema oscuro",
   "theme.activateLight": "Activar tema claro",
   "theme.activateDark": "Activar tema oscuro",
-
   "share.button": "Compartir",
   "share.aria": "Compartir clima",
   "share.menuAria": "Opciones para compartir",
   "share.copied": "✓ ¡Copiado!",
   "share.copyText": "Copiar texto",
   "share.moreOptions": "Más opciones...",
-
   "skeleton.loading": "Cargando datos del clima",
   "skeleton.loadingText": "Cargando datos del clima...",
   "skeleton.loadingMap": "Cargando mapa",
-
   "error.timeout": "La solicitud expiró. Inténtalo de nuevo.",
   "error.unexpected": "Error inesperado. Inténtalo de nuevo.",
   "error.geoUnavailable": "La geolocalización no está disponible en tu navegador.",
@@ -96,5 +85,7 @@
   "error.cepNotFound": "Código postal '{{cep}}' no encontrado. Verifica si es correcto.",
   "error.cepLookupFailed": "No se pudo consultar el código postal. Inténtalo de nuevo.",
   "error.cepNoCity": "No se encontró ciudad para este código postal.",
-  "error.coordsFailed": "No se pudo obtener el clima de tu ubicación."
+  "error.coordsFailed": "No se pudo obtener el clima de tu ubicación.",
+  "refresh.aria": "Actualizar datos del clima",
+  "refresh.title": "Actualizar"
 }

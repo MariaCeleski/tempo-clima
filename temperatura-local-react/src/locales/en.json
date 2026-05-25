@@ -2,7 +2,6 @@
   "app.title": "CLIMATEMP",
   "app.subtitle": "Showing weather and temperature for your desired location",
   "app.skipToContent": "Skip to main content",
-
   "search.label": "Search weather",
   "search.modeLabel": "Search mode",
   "search.city": "City",
@@ -17,19 +16,16 @@
   "search.formLabel": "Weather search form",
   "search.geolocate": "Use my location",
   "search.geolocateAria": "Use my location to search weather",
-
   "history.title": "Recent searches",
   "history.clear": "Clear",
   "history.clearAria": "Clear search history",
   "history.searchAria": "Search weather in {{city}}",
-
   "favorites.title": "Favorites",
   "favorites.clear": "Clear favorites",
   "favorites.clearAria": "Clear favorites",
   "favorites.searchAria": "Search weather in {{city}}",
   "favorites.removeAria": "Remove {{city}} from favorites",
   "favorites.addAria": "Add {{city}} to favorites",
-
   "weather.currentAria": "Current weather in {{city}}",
   "weather.feelsLike": "Feels like: {{temp}}",
   "weather.humidity": "Humidity: {{value}} percent",
@@ -39,7 +35,6 @@
   "weather.temperatureAria": "Temperature: {{temp}}",
   "weather.conditionAlt": "Weather condition: {{description}}",
   "weather.clothingSuggestion": "Clothing suggestion",
-
   "forecast.title": "Next days",
   "forecast.sectionAria": "Next days forecast",
   "forecast.previousDays": "Previous days",
@@ -51,7 +46,6 @@
   "forecast.pageAria": "Page {{current}} of {{total}}",
   "forecast.paginationAria": "Forecast pages",
   "forecast.forecastAlt": "Forecast: {{description}}",
-
   "chart.title": "Temperature forecast",
   "chart.sectionAria": "Temperature chart",
   "chart.srDescription": "Forecast temperatures: {{data}}",
@@ -59,27 +53,22 @@
   "chart.min": "Min",
   "chart.maxLabel": "Max: {{value}}",
   "chart.minLabel": "Min: {{value}}",
-
   "alerts.low": "Low",
   "alerts.moderate": "Moderate",
   "alerts.severe": "Severe",
-
   "theme.light": "Light theme",
   "theme.dark": "Dark theme",
   "theme.activateLight": "Activate light theme",
   "theme.activateDark": "Activate dark theme",
-
   "share.button": "Share",
   "share.aria": "Share weather",
   "share.menuAria": "Share options",
   "share.copied": "✓ Copied!",
   "share.copyText": "Copy text",
   "share.moreOptions": "More options...",
-
   "skeleton.loading": "Loading weather data",
   "skeleton.loadingText": "Loading weather data...",
   "skeleton.loadingMap": "Loading map",
-
   "error.timeout": "Request timed out. Please try again.",
   "error.unexpected": "Unexpected error. Please try again.",
   "error.geoUnavailable": "Geolocation is not available in your browser.",
@@ -96,5 +85,7 @@
   "error.cepNotFound": "ZIP code '{{cep}}' not found. Check if it's correct.",
   "error.cepLookupFailed": "Could not look up the ZIP code. Please try again.",
   "error.cepNoCity": "No city found for this ZIP code.",
-  "error.coordsFailed": "Could not get weather for your location."
+  "error.coordsFailed": "Could not get weather for your location.",
+  "refresh.aria": "Refresh weather data",
+  "refresh.title": "Refresh"
 }
