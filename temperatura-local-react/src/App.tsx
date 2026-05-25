@@ -416,6 +416,11 @@ function App() {
             )}
           </div>
         </div>
+
+        <footer className="mt-12 pb-4 text-center text-xs text-slate-400 dark:text-white/30">
+          <p>© {new Date().getFullYear()} Temperatura Local — Maria Celeski</p>
+          <p className="mt-1">Todos os direitos reservados</p>
+        </footer>
       </main>
     </div>
   );
