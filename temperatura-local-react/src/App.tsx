@@ -15,6 +15,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { WeatherAlerts } from './components/WeatherAlerts';
 import { LanguageSelector } from './components/LanguageSelector';
 import { LastUpdated } from './components/LastUpdated';
+import { CompareMode } from './components/CompareMode';
 
 import { WeatherParticles } from './components/WeatherParticles';
 import { WeatherNotification } from './components/WeatherNotification';
@@ -437,6 +438,7 @@ function App() {
                   />
                 </div>
                 {lastUpdated && <LastUpdated timestamp={lastUpdated} />}
+                <CompareMode primaryData={weatherData} unit={unit} lang={lang} />
                 <div style={{ animationDelay: '150ms' }}>
                   <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label={t('skeleton.loadingMap')} />}>
                     <WeatherMap

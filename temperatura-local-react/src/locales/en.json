@@ -103,5 +103,10 @@
   "uv.protection.moderate": "Wear sunscreen and sunglasses",
   "uv.protection.high": "Avoid sun exposure, use SPF 30+ sunscreen",
   "notification.weatherChanged": "Weather changed! Now: {{temp}}, {{description}}",
-  "notification.dismiss": "Close"
+  "notification.dismiss": "Close",
+  "compare.button": "Compare",
+  "compare.close": "Close comparison",
+  "compare.placeholder": "Enter second city...",
+  "compare.warmer": "warmer",
+  "compare.cooler": "cooler"
 }

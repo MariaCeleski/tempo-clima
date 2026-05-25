@@ -103,5 +103,10 @@
   "uv.protection.moderate": "Use protector solar y gafas de sol",
   "uv.protection.high": "Evite la exposición al sol, use protector solar SPF 30+",
   "notification.weatherChanged": "¡El clima cambió! Ahora: {{temp}}, {{description}}",
-  "notification.dismiss": "Cerrar"
+  "notification.dismiss": "Cerrar",
+  "compare.button": "Comparar",
+  "compare.close": "Cerrar comparación",
+  "compare.placeholder": "Ingresa la segunda ciudad...",
+  "compare.warmer": "más cálida",
+  "compare.cooler": "más fría"
 }
