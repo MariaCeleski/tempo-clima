@@ -2,7 +2,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yaml';
 import { createCorsMiddleware } from './middleware/cors.js';
 import { createRateLimiter } from './middleware/rateLimiter.js';
 import healthRouter from './routes/health.js';
@@ -41,7 +44,19 @@ app.use(createRateLimiter());
 // 4. JSON body parser
 app.use(express.json());
 
-// 5. Route handlers
+// 5. Swagger UI documentation
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const openapiPath = path.resolve(__dirname, '../openapi.yaml');
+try {
+  const openapiFile = readFileSync(openapiPath, 'utf-8');
+  const openapiDoc = YAML.parse(openapiFile);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiDoc));
+} catch {
+  console.warn('Warning: openapi.yaml not found. Swagger UI disabled.');
+}
+
+// 6. Route handlers
 app.use('/api/health', healthRouter);
 app.use('/api/weather', weatherRouter);
 app.use('/api/forecast', forecastRouter);
@@ -49,10 +64,8 @@ app.use('/api/air-quality', airQualityRouter);
 app.use('/api/geocode', geocodeRouter);
 app.use('/api/cep', cepRouter);
 
-// 6. Static file serving (optional deployment mode)
+// 7. Static file serving (optional deployment mode)
 if (process.env.SERVE_STATIC === 'true') {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
   const staticPath = path.resolve(__dirname, '../../temperatura-local-react/dist');
   app.use(express.static(staticPath));
 
