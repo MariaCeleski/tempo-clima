@@ -313,6 +313,8 @@ function parseForecastResponse(data: ForecastApiResponse): ForecastDay[] {
 
   return Array.from(dayMap.entries())
     .filter(([key]) => key !== today)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(0, 5)
     .map(([dateKey, periods]) => {
       // Find the period closest to noon as representative
       const noonPeriod = periods.reduce((best, current) => {
