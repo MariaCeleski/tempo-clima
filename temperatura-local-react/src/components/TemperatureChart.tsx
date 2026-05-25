@@ -22,10 +22,10 @@ interface ChartDataPoint {
   min: number;
 }
 
-function formatDayLabel(dt: number): string {
+function formatDayLabel(dt: number, t: (key: string) => string): string {
   const date = new Date(dt * 1000);
-  const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  return `${days[date.getDay()]} ${date.getDate()}/${date.getMonth() + 1}`;
+  const dayKeys = ['days.sun', 'days.mon', 'days.tue', 'days.wed', 'days.thu', 'days.fri', 'days.sat'];
+  return `${t(dayKeys[date.getDay()])} ${date.getDate()}/${date.getMonth() + 1}`;
 }
 
 function convertTemp(celsius: number, unit: 'C' | 'F'): number {
@@ -71,7 +71,7 @@ export function TemperatureChart({ forecast, unit }: TemperatureChartProps) {
   if (forecast.length === 0) return null;
 
   const data: ChartDataPoint[] = forecast.map((day) => ({
-    label: formatDayLabel(day.dt),
+    label: formatDayLabel(day.dt, t),
     max: convertTemp(day.temp_max, unit),
     min: convertTemp(day.temp_min, unit),
   }));

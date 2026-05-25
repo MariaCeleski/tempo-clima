@@ -108,5 +108,12 @@
   "compare.close": "Fechar comparação",
   "compare.placeholder": "Digite a segunda cidade...",
   "compare.warmer": "mais quente",
-  "compare.cooler": "mais fria"
+  "compare.cooler": "mais fria",
+  "days.sun": "Dom",
+  "days.mon": "Seg",
+  "days.tue": "Ter",
+  "days.wed": "Qua",
+  "days.thu": "Qui",
+  "days.fri": "Sex",
+  "days.sat": "Sáb"
 }

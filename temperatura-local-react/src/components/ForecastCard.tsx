@@ -10,11 +10,7 @@ interface ForecastCardProps {
 
 const DAYS_PER_PAGE = 3;
 
-function formatDay(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  return days[date.getDay()];
-}
+const DAY_KEYS = ['days.sun', 'days.mon', 'days.tue', 'days.wed', 'days.thu', 'days.fri', 'days.sat'];
 
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp * 1000);
@@ -43,7 +39,8 @@ function PeriodDetail({ period, unit }: { period: ForecastItem; unit: 'C' | 'F' 
 function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const dayLabel = `${formatDay(day.dt)} ${formatDate(day.dt)}`;
+  const dayName = t(DAY_KEYS[new Date(day.dt * 1000).getDay()]);
+  const dayLabel = `${dayName} ${formatDate(day.dt)}`;
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-white/15 bg-white/60 dark:bg-white/5 p-3 shadow-sm dark:shadow-none">
@@ -52,7 +49,7 @@ function DayCard({ day, unit }: { day: ForecastDay; unit: 'C' | 'F' }) {
           <img src={day.icon_url} alt={t('forecast.forecastAlt', { description: day.description })} className="h-10 w-10" />
           <div>
             <p className="text-sm font-semibold text-slate-900 dark:text-white">
-              {formatDay(day.dt)} <span className="text-slate-500 dark:text-white/60">{formatDate(day.dt)}</span>
+              {dayName} <span className="text-slate-500 dark:text-white/60">{formatDate(day.dt)}</span>
             </p>
             <p className="text-xs capitalize text-purple-600 dark:text-purple-300">{day.description}</p>
           </div>

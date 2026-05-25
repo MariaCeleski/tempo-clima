@@ -108,5 +108,12 @@
   "compare.close": "Close comparison",
   "compare.placeholder": "Enter second city...",
   "compare.warmer": "warmer",
-  "compare.cooler": "cooler"
+  "compare.cooler": "cooler",
+  "days.sun": "Sun",
+  "days.mon": "Mon",
+  "days.tue": "Tue",
+  "days.wed": "Wed",
+  "days.thu": "Thu",
+  "days.fri": "Fri",
+  "days.sat": "Sat"
 }
