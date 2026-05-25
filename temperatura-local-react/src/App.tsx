@@ -131,6 +131,29 @@ function App() {
 
   const lang = getApiLang(i18n.language);
   const weatherCardRef = useRef<HTMLDivElement>(null);
+  const prevLangRef = useRef(lang);
+
+  // Re-fetch weather data when language changes (to get translated descriptions)
+  useEffect(() => {
+    if (prevLangRef.current !== lang && weatherData) {
+      prevLangRef.current = lang;
+      // Re-fetch with new language
+      const cityName = weatherData.city_name;
+      Promise.all([
+        fetchWeather(cityName, lang),
+        fetchForecast(cityName, lang),
+      ]).then(([data, forecastData]) => {
+        setWeatherData(data);
+        setForecast(forecastData);
+        setAlerts(generateAlerts(data));
+        fetchAirQuality(data.lat, data.lon).then(setAirQuality);
+      }).catch(() => {
+        // Silently fail — keep existing data
+      });
+    } else {
+      prevLangRef.current = lang;
+    }
+  }, [lang]);
 
   // Weather change notification polling
   const { notification, dismiss } = useWeatherPolling(weatherData?.city_name ?? null, lang);
