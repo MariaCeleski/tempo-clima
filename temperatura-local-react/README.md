@@ -7,15 +7,22 @@ Aplicação de clima desenvolvida com React, TypeScript, Vite e Tailwind CSS. Pe
 ## Funcionalidades
 
 - Busca de clima por nome de cidade, CEP ou geolocalização
+- Busca por arrastar e soltar marcador no mapa
 - Exibição do clima atual com temperatura, umidade, vento e mais
+- Índice UV estimado com recomendação de proteção solar
 - Informações de qualidade do ar com escala de 1 a 5
 - Previsão do tempo para 5 dias com detalhes por hora
 - Gráfico de temperatura com máximas e mínimas
 - Alertas climáticos automáticos (calor, frio, vento, tempestade)
+- Comparação entre duas cidades lado a lado
 - Cidades favoritas com persistência local
-- Tema claro/escuro com detecção de preferência do sistema
-- Internacionalização (Português e Inglês)
-- Mapa interativo do clima com marcador na cidade pesquisada
+- Botão de atualizar dados (refresh) com animação
+- Indicador de última atualização ("Atualizado há X min")
+- Exportar card de clima como imagem PNG
+- Notificação automática de mudança de clima (polling 30min)
+- Tema claro/escuro
+- Internacionalização (Português, Espanhol e Inglês)
+- Mapa interativo com marcador arrastável e tooltip detalhado
 - Partículas animadas de acordo com a condição climática
 - Relógio local da cidade pesquisada
 - Histórico de buscas recentes
@@ -45,6 +52,11 @@ Aplicação de clima desenvolvida com React, TypeScript, Vite e Tailwind CSS. Pe
 
 - i18next
 - react-i18next
+- i18next-browser-languagedetector
+
+### Utilitários
+
+- html2canvas (exportar como imagem)
 
 ### Backend (API Proxy)
 
@@ -127,11 +139,13 @@ src/
 │   ├── react.svg
 │   └── vite.svg
 ├── components/
-│   ├── AirQuality.tsx
+│   ├── CompareMode.tsx
 │   ├── ErrorMessage.tsx
+│   ├── ExportButton.tsx
 │   ├── FavoriteCities.tsx
 │   ├── ForecastCard.tsx
 │   ├── LanguageSelector.tsx
+│   ├── LastUpdated.tsx
 │   ├── LoadingSpinner.tsx
 │   ├── LocalClock.tsx
 │   ├── SearchForm.tsx
@@ -141,9 +155,11 @@ src/
 │   ├── TemperatureChart.tsx
 │   ├── ThemeToggle.tsx
 │   ├── UnitToggle.tsx
+│   ├── UVIndex.tsx
 │   ├── WeatherAlerts.tsx
 │   ├── WeatherCard.tsx
 │   ├── WeatherMap.tsx
+│   ├── WeatherNotification.tsx
 │   ├── WeatherParticles.tsx
 │   └── __tests__/                    # Testes unitários e de propriedade dos componentes
 │       ├── WeatherCard.property.test.tsx
@@ -258,7 +274,35 @@ Toggle de tema no canto superior direito (sol/lua). Respeita a preferência do s
 
 ### Internacionalização
 
-Suporte a Português (pt-BR) e Inglês (en). Seletor de idioma (PT | EN) no canto superior direito. Descrições climáticas da API também são traduzidas via parâmetro `lang`.
+Suporte a Português (pt-BR), Espanhol (es) e Inglês (en). Seletor de idioma (PT | ES | EN) no canto superior direito. Descrições climáticas da API também são traduzidas via parâmetro `lang`.
+
+### Índice UV
+
+Estimativa do índice UV baseada na posição solar e condição climática. Exibe barra de gradiente colorida (verde→amarelo→laranja→vermelho→violeta), valor numérico, categoria (Baixo/Moderado/Alto/Muito Alto/Extremo) e recomendação de proteção solar. Visível apenas durante o dia.
+
+### Comparação entre Cidades
+
+Botão "Comparar" que permite buscar uma segunda cidade e visualizar os dados lado a lado (desktop) ou empilhados (mobile). Destaca qual cidade é mais quente (▲ laranja) ou mais fria (▼ azul).
+
+### Marcador Arrastável no Mapa
+
+O marcador do mapa pode ser arrastado para qualquer localização. Ao soltar, busca automaticamente o clima das novas coordenadas, atualizando todos os dados da interface.
+
+### Exportar como Imagem
+
+Botão de câmera que captura o card de clima como imagem PNG e faz download automático com nome `clima-{cidade}-{data}.png`.
+
+### Atualizar Dados
+
+Botão de refresh que re-busca os dados da cidade atual sem precisar digitar novamente. Ícone gira durante o carregamento.
+
+### Indicador de Última Atualização
+
+Texto discreto abaixo do card mostrando quando os dados foram buscados pela última vez ("Atualizado agora", "Atualizado há 5 min", etc.).
+
+### Notificação de Mudança de Clima
+
+Polling automático a cada 30 minutos (apenas com aba visível). Se a temperatura mudar mais de 3°C ou a condição climática mudar, exibe um toast informativo no topo da tela.
 
 ## Testes
 

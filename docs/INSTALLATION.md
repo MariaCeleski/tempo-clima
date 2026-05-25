@@ -62,6 +62,8 @@ VITE_API_PROXY_URL=http://localhost:3001
 
 > A variável `VITE_API_PROXY_URL` é opcional. Se definida, o frontend direciona as requisições ao backend proxy. Se não definida, o frontend chama a API do OpenWeatherMap diretamente.
 
+> A aplicação suporta 3 idiomas (PT, ES, EN), alternância de tema (claro/escuro), e permite buscar clima arrastando o marcador no mapa.
+
 ### Backend (API Proxy)
 
 ```bash
