@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchWeather, formatTemperature } from '../services/weatherApi';
 import type { WeatherData } from '../types/weather';
@@ -9,6 +9,34 @@ interface CompareModeProps {
   lang: string;
 }
 
+interface CitySuggestion {
+  name: string;
+  state?: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
+
+async function fetchCitySuggestions(query: string): Promise<CitySuggestion[]> {
+  if (query.trim().length < 2) return [];
+  try {
+    const apiKey = import.meta.env.VITE_API_KEY;
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.map((item: { name: string; state?: string; country: string; lat: number; lon: number }) => ({
+      name: item.name,
+      state: item.state,
+      country: item.country,
+      lat: item.lat,
+      lon: item.lon,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function CompareMode({ primaryData, unit, lang }: CompareModeProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -16,17 +44,45 @@ export function CompareMode({ primaryData, unit, lang }: CompareModeProps) {
   const [compareData, setCompareData] = useState<WeatherData | null>(null);
   const [isCompareLoading, setIsCompareLoading] = useState(false);
   const [compareError, setCompareError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleCompareSearch(e: FormEvent) {
-    e.preventDefault();
-    if (!compareCity.trim()) return;
+  // Debounced autocomplete
+  useEffect(() => {
+    if (compareCity.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
 
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const results = await fetchCitySuggestions(compareCity);
+      setSuggestions(results);
+      setShowSuggestions(results.length > 0);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [compareCity]);
+
+  function handleSelectSuggestion(suggestion: CitySuggestion) {
+    setCompareCity(suggestion.name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    // Auto-search after selection
+    searchCity(suggestion.name);
+  }
+
+  async function searchCity(city: string) {
     setIsCompareLoading(true);
     setCompareError(null);
     setCompareData(null);
 
     try {
-      const data = await fetchWeather(compareCity.trim(), lang);
+      const data = await fetchWeather(city, lang);
       setCompareData(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -37,6 +93,13 @@ export function CompareMode({ primaryData, unit, lang }: CompareModeProps) {
     } finally {
       setIsCompareLoading(false);
     }
+  }
+
+  async function handleCompareSearch(e: FormEvent) {
+    e.preventDefault();
+    if (!compareCity.trim()) return;
+    setShowSuggestions(false);
+    searchCity(compareCity.trim());
   }
 
   function handleClose() {
@@ -83,14 +146,37 @@ export function CompareMode({ primaryData, unit, lang }: CompareModeProps) {
 
       {/* Search form for second city */}
       <form onSubmit={handleCompareSearch} className="mb-3 flex gap-2">
-        <input
-          type="text"
-          value={compareCity}
-          onChange={(e) => setCompareCity(e.target.value)}
-          placeholder={t('compare.placeholder')}
-          className="flex-1 rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-white/10 px-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/40 outline-none focus:border-blue-400 dark:focus:border-blue-400 transition-colors"
-          aria-label={t('compare.placeholder')}
-        />
+        <div className="relative flex-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={compareCity}
+            onChange={(e) => setCompareCity(e.target.value)}
+            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            placeholder={t('compare.placeholder')}
+            className="w-full rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-white/10 px-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/40 outline-none focus:border-blue-400 dark:focus:border-blue-400 transition-colors"
+            aria-label={t('compare.placeholder')}
+            autoComplete="off"
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-slate-800 shadow-lg overflow-hidden">
+              {suggestions.map((s, i) => (
+                <li key={`${s.name}-${s.country}-${i}`}>
+                  <button
+                    type="button"
+                    onMouseDown={() => handleSelectSuggestion(s)}
+                    className="w-full px-3 py-2 text-left text-sm text-slate-700 dark:text-white/90 hover:bg-blue-50 dark:hover:bg-white/10 transition-colors"
+                  >
+                    <span className="font-medium">{s.name}</span>
+                    {s.state && <span className="text-slate-400 dark:text-white/40">, {s.state}</span>}
+                    <span className="text-slate-400 dark:text-white/40"> — {s.country}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <button
           type="submit"
           disabled={isCompareLoading || !compareCity.trim()}
