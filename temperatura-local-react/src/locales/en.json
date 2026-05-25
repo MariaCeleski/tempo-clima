@@ -88,6 +88,8 @@
   "error.coordsFailed": "Could not get weather for your location.",
   "refresh.aria": "Refresh weather data",
   "refresh.title": "Refresh",
+  "export.aria": "Export as image",
+  "export.title": "Export",
   "lastUpdated.now": "Updated just now",
   "lastUpdated.minutes": "Updated {{count}} min ago",
   "lastUpdated.hour": "Updated 1 hour ago",

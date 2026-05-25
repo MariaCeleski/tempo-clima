@@ -88,6 +88,8 @@
   "error.coordsFailed": "Não foi possível obter o clima da sua localização.",
   "refresh.aria": "Atualizar dados do clima",
   "refresh.title": "Atualizar",
+  "export.aria": "Exportar como imagem",
+  "export.title": "Exportar",
   "lastUpdated.now": "Atualizado agora",
   "lastUpdated.minutes": "Atualizado há {{count}} min",
   "lastUpdated.hour": "Atualizado há 1 hora",

@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchForm } from './components/SearchForm';
 import { WeatherCard } from './components/WeatherCard';
@@ -10,6 +10,7 @@ import { ErrorMessage } from './components/ErrorMessage';
 import { SkeletonCard } from './components/SkeletonCard';
 import { UnitToggle } from './components/UnitToggle';
 import { ShareButton } from './components/ShareButton';
+import { ExportButton } from './components/ExportButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { WeatherAlerts } from './components/WeatherAlerts';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -126,6 +127,7 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const lang = getApiLang(i18n.language);
+  const weatherCardRef = useRef<HTMLDivElement>(null);
 
   // Try geolocation on first load (silently — no error shown if denied)
   useEffect(() => {
@@ -400,6 +402,7 @@ function App() {
                 <div className="mb-3 flex justify-between items-center" style={{ animationDelay: '50ms' }}>
                   <ShareButton data={weatherData} />
                   <div className="flex items-center gap-2">
+                    <ExportButton targetRef={weatherCardRef} cityName={weatherData.city_name} />
                     <button
                       onClick={() => handleSearch(weatherData.city_name)}
                       disabled={isLoading}
@@ -414,7 +417,7 @@ function App() {
                     <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                   </div>
                 </div>
-                <div style={{ animationDelay: '100ms' }}>
+                <div ref={weatherCardRef} style={{ animationDelay: '100ms' }}>
                   <WeatherCard
                     data={weatherData}
                     unit={unit}
