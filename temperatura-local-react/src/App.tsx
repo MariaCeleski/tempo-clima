@@ -17,6 +17,8 @@ import { LanguageSelector } from './components/LanguageSelector';
 import { LastUpdated } from './components/LastUpdated';
 
 import { WeatherParticles } from './components/WeatherParticles';
+import { WeatherNotification } from './components/WeatherNotification';
+import { useWeatherPolling } from './hooks/useWeatherPolling';
 
 const WeatherMap = lazy(() => import('./components/WeatherMap').then(m => ({ default: m.WeatherMap })));
 import {
@@ -128,6 +130,9 @@ function App() {
 
   const lang = getApiLang(i18n.language);
   const weatherCardRef = useRef<HTMLDivElement>(null);
+
+  // Weather change notification polling
+  const { notification, dismiss } = useWeatherPolling(weatherData?.city_name ?? null, lang);
 
   // Try geolocation on first load (silently — no error shown if denied)
   useEffect(() => {
@@ -339,6 +344,11 @@ function App() {
 
   return (
     <div className={`relative min-h-screen bg-gradient-to-br transition-colors duration-500 ${bgClass}`}>
+      {/* Weather change notification toast */}
+      {notification && (
+        <WeatherNotification message={notification} onDismiss={dismiss} />
+      )}
+
       {/* Light mode background overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-blue-50 to-white transition-opacity duration-500 dark:opacity-0" aria-hidden="true" />
 

@@ -101,5 +101,7 @@
   "uv.extreme": "Extreme",
   "uv.protection.low": "No protection needed",
   "uv.protection.moderate": "Wear sunscreen and sunglasses",
-  "uv.protection.high": "Avoid sun exposure, use SPF 30+ sunscreen"
+  "uv.protection.high": "Avoid sun exposure, use SPF 30+ sunscreen",
+  "notification.weatherChanged": "Weather changed! Now: {{temp}}, {{description}}",
+  "notification.dismiss": "Close"
 }
