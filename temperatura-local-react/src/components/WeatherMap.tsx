@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { formatTemperature } from '../services/weatherApi';
 
 interface WeatherMapProps {
   lat: number;
   lon: number;
   cityName: string;
   temperature: number;
+  description: string;
+  iconUrl: string;
+  unit: 'C' | 'F';
 }
 
 // Fix default marker icon issue with bundlers
@@ -29,12 +33,12 @@ function MapUpdater({ lat, lon }: { lat: number; lon: number }) {
   return null;
 }
 
-export function WeatherMap({ lat, lon, cityName, temperature }: WeatherMapProps) {
+export function WeatherMap({ lat, lon, cityName, temperature, description, iconUrl, unit }: WeatherMapProps) {
   return (
     <div
       className="animate-fadeInUp mt-4 overflow-hidden rounded-2xl border border-white/25"
       role="img"
-      aria-label={`Mapa mostrando a localização de ${cityName} com temperatura de ${temperature}°C`}
+      aria-label={`Mapa mostrando a localização de ${cityName} com temperatura de ${formatTemperature(temperature, unit)}`}
     >
       <MapContainer
         center={[lat, lon]}
@@ -49,8 +53,12 @@ export function WeatherMap({ lat, lon, cityName, temperature }: WeatherMapProps)
         />
         <Marker position={[lat, lon]} icon={markerIcon}>
           <Popup>
-            <strong>{cityName}</strong><br />
-            {temperature}°C
+            <div className="flex flex-col items-center gap-1 text-center">
+              <strong className="text-sm">{cityName}</strong>
+              <img src={iconUrl} alt={description} className="h-8 w-8" />
+              <span className="text-sm font-medium">{formatTemperature(temperature, unit)}</span>
+              <span className="text-xs capitalize text-gray-600">{description}</span>
+            </div>
           </Popup>
         </Marker>
         <MapUpdater lat={lat} lon={lon} />

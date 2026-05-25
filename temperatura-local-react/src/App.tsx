@@ -13,6 +13,7 @@ import { ShareButton } from './components/ShareButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { WeatherAlerts } from './components/WeatherAlerts';
 import { LanguageSelector } from './components/LanguageSelector';
+import { LastUpdated } from './components/LastUpdated';
 
 import { WeatherParticles } from './components/WeatherParticles';
 
@@ -122,6 +123,7 @@ function App() {
   const [favorites, setFavorites] = useState<string[]>(loadFavorites);
   const [clearSignal, setClearSignal] = useState(0);
   const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const lang = getApiLang(i18n.language);
 
@@ -141,6 +143,7 @@ function App() {
             setAlerts(generateAlerts(data));
             setHistory(addToHistory(data.city_name, loadHistory()));
             setClearSignal((c) => c + 1);
+            setLastUpdated(new Date());
             fetchAirQuality(data.lat, data.lon).then(setAirQuality);
           } catch {
             // Silently fail on auto-geolocation
@@ -186,6 +189,7 @@ function App() {
       setAlerts(generateAlerts(data));
       setHistory(addToHistory(data.city_name, history));
       setClearSignal((c) => c + 1);
+      setLastUpdated(new Date());
       // Fetch AQI in background (non-blocking)
       fetchAirQuality(data.lat, data.lon).then(setAirQuality);
     } catch (err) {
@@ -232,6 +236,7 @@ function App() {
       setAlerts(generateAlerts(data));
       setHistory(addToHistory(data.city_name, history));
       setClearSignal((c) => c + 1);
+      setLastUpdated(new Date());
       fetchAirQuality(data.lat, data.lon).then(setAirQuality);
     } catch (err) {
       if (err instanceof Error) {
@@ -269,6 +274,7 @@ function App() {
           setAlerts(generateAlerts(data));
           setHistory(addToHistory(data.city_name, history));
           setClearSignal((c) => c + 1);
+          setLastUpdated(new Date());
           fetchAirQuality(data.lat, data.lon).then(setAirQuality);
         } catch (err) {
           if (err instanceof Error) {
@@ -388,8 +394,10 @@ function App() {
             {isLoading && <SkeletonCard />}
             {weatherData && !isLoading && (
               <>
-                <WeatherAlerts alerts={alerts} />
-                <div className="mb-3 flex justify-between items-center">
+                <div style={{ animationDelay: '0ms' }}>
+                  <WeatherAlerts alerts={alerts} />
+                </div>
+                <div className="mb-3 flex justify-between items-center" style={{ animationDelay: '50ms' }}>
                   <ShareButton data={weatherData} />
                   <div className="flex items-center gap-2">
                     <button
@@ -406,25 +414,37 @@ function App() {
                     <UnitToggle unit={unit} onToggle={() => setUnit((u) => u === 'C' ? 'F' : 'C')} />
                   </div>
                 </div>
-                <WeatherCard
-                  data={weatherData}
-                  unit={unit}
-                  airQuality={airQuality}
-                  isFavorite={favorites.some((f) => f.toLowerCase() === weatherData.city_name.toLowerCase())}
-                  onToggleFavorite={() => toggleFavorite(weatherData.city_name)}
-                />
-                <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label={t('skeleton.loadingMap')} />}>
-                  <WeatherMap
-                    lat={weatherData.lat}
-                    lon={weatherData.lon}
-                    cityName={weatherData.city_name}
-                    temperature={weatherData.temperature}
+                <div style={{ animationDelay: '100ms' }}>
+                  <WeatherCard
+                    data={weatherData}
+                    unit={unit}
+                    airQuality={airQuality}
+                    isFavorite={favorites.some((f) => f.toLowerCase() === weatherData.city_name.toLowerCase())}
+                    onToggleFavorite={() => toggleFavorite(weatherData.city_name)}
                   />
-                </Suspense>
+                </div>
+                {lastUpdated && <LastUpdated timestamp={lastUpdated} />}
+                <div style={{ animationDelay: '150ms' }}>
+                  <Suspense fallback={<div className="mt-4 h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" aria-label={t('skeleton.loadingMap')} />}>
+                    <WeatherMap
+                      lat={weatherData.lat}
+                      lon={weatherData.lon}
+                      cityName={weatherData.city_name}
+                      temperature={weatherData.temperature}
+                      description={weatherData.description}
+                      iconUrl={weatherData.icon_url}
+                      unit={unit}
+                    />
+                  </Suspense>
+                </div>
                 {forecast.length > 0 && (
-                  <TemperatureChart forecast={forecast} unit={unit} />
+                  <div style={{ animationDelay: '200ms' }}>
+                    <TemperatureChart forecast={forecast} unit={unit} />
+                  </div>
                 )}
-                <ForecastCard forecast={forecast} unit={unit} />
+                <div style={{ animationDelay: '250ms' }}>
+                  <ForecastCard forecast={forecast} unit={unit} />
+                </div>
               </>
             )}
           </div>

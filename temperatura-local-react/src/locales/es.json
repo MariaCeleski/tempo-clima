@@ -87,5 +87,9 @@
   "error.cepNoCity": "No se encontró ciudad para este código postal.",
   "error.coordsFailed": "No se pudo obtener el clima de tu ubicación.",
   "refresh.aria": "Actualizar datos del clima",
-  "refresh.title": "Actualizar"
+  "refresh.title": "Actualizar",
+  "lastUpdated.now": "Actualizado ahora",
+  "lastUpdated.minutes": "Actualizado hace {{count}} min",
+  "lastUpdated.hour": "Actualizado hace 1 hora",
+  "lastUpdated.hours": "Actualizado hace {{count}} horas"
 }
