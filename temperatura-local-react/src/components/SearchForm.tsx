@@ -41,6 +41,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
   const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipNextDebounceRef = useRef(false);
 
   useEffect(() => {
     if (clearSignal) {
@@ -53,6 +54,11 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
 
   // Debounced autocomplete for city input
   useEffect(() => {
+    if (skipNextDebounceRef.current) {
+      skipNextDebounceRef.current = false;
+      return;
+    }
+
     if (mode !== 'city' || city.trim().length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -72,6 +78,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
   }, [city, mode]);
 
   function handleSelectSuggestion(suggestion: CitySuggestion) {
+    skipNextDebounceRef.current = true;
     setCity(suggestion.name);
     setSuggestions([]);
     setShowSuggestions(false);
