@@ -1,6 +1,6 @@
 # Temperatura Local
 
-[![CI](https://github.com/MariaCeleski/tempo-clima/actions/workflows/ci.yml/badge.svg)](https://github.com/MariaCeleski/tempo-clima/actions/workflows/ci.yml)
+[![CI](https://github.com/MariaCeleski/tempo-clima/actions/workflows/ci.yml/badge.svg)](https://github.com/MariaCeleski/tempo-clima/actions/workflows/ci.yml) ![Performance](https://img.shields.io/badge/Performance-90%2B-brightgreen) ![Accessibility](https://img.shields.io/badge/Accessibility-90%2B-brightgreen) ![Best Practices](https://img.shields.io/badge/Best%20Practices-80%2B-green)
 
 Aplicação de clima desenvolvida com React, TypeScript, Vite e Tailwind CSS. Permite consultar condições meteorológicas atuais, previsão estendida e qualidade do ar para qualquer cidade, com interface responsiva e suporte offline via PWA.
 
