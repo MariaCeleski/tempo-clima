@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -12,6 +12,7 @@ interface WeatherMapProps {
   description: string;
   iconUrl: string;
   unit: 'C' | 'F';
+  onLocationChange?: (lat: number, lon: number) => void;
 }
 
 // Fix default marker icon issue with bundlers
@@ -33,7 +34,19 @@ function MapUpdater({ lat, lon }: { lat: number; lon: number }) {
   return null;
 }
 
-export function WeatherMap({ lat, lon, cityName, temperature, description, iconUrl, unit }: WeatherMapProps) {
+export function WeatherMap({ lat, lon, cityName, temperature, description, iconUrl, unit, onLocationChange }: WeatherMapProps) {
+  const markerRef = useRef<L.Marker>(null);
+
+  const eventHandlers = useMemo(() => ({
+    dragend() {
+      const marker = markerRef.current;
+      if (marker && onLocationChange) {
+        const position = marker.getLatLng();
+        onLocationChange(position.lat, position.lng);
+      }
+    },
+  }), [onLocationChange]);
+
   return (
     <div
       className="animate-fadeInUp mt-4 overflow-hidden rounded-2xl border border-white/25"
@@ -51,7 +64,13 @@ export function WeatherMap({ lat, lon, cityName, temperature, description, iconU
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
         />
-        <Marker position={[lat, lon]} icon={markerIcon}>
+        <Marker
+          position={[lat, lon]}
+          icon={markerIcon}
+          draggable={!!onLocationChange}
+          eventHandlers={eventHandlers}
+          ref={markerRef}
+        >
           <Popup>
             <div className="flex flex-col items-center gap-1 text-center">
               <strong className="text-sm">{cityName}</strong>
@@ -63,6 +82,11 @@ export function WeatherMap({ lat, lon, cityName, temperature, description, iconU
         </Marker>
         <MapUpdater lat={lat} lon={lon} />
       </MapContainer>
+      {onLocationChange && (
+        <p className="py-1 text-center text-xs text-slate-400 dark:text-white/30">
+          Arraste o marcador para buscar outra localização
+        </p>
+      )}
     </div>
   );
 }

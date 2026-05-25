@@ -313,6 +313,36 @@ function App() {
     localStorage.removeItem(HISTORY_KEY);
   }
 
+  async function handleMapDrag(lat: number, lon: number): Promise<void> {
+    setIsLoading(true);
+    setError(null);
+    setForecast([]);
+    setAlerts([]);
+    setAirQuality(null);
+
+    try {
+      const [data, forecastData] = await Promise.all([
+        fetchWeatherByCoords(lat, lon, lang),
+        fetchForecastByCoords(lat, lon, lang),
+      ]);
+      setWeatherData(data);
+      setForecast(forecastData);
+      setAlerts(generateAlerts(data));
+      setLastUpdated(new Date());
+      setHistory(addToHistory(data.city_name, history));
+      setClearSignal((c) => c + 1);
+      fetchAirQuality(data.lat, data.lon).then(setAirQuality);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(t('error.unexpected'));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function toggleFavorite(city: string): void {
     setFavorites((prev) => {
       const exists = prev.some((f) => f.toLowerCase() === city.toLowerCase());
@@ -449,6 +479,7 @@ function App() {
                       description={weatherData.description}
                       iconUrl={weatherData.icon_url}
                       unit={unit}
+                      onLocationChange={handleMapDrag}
                     />
                   </Suspense>
                 </div>
