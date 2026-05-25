@@ -138,6 +138,7 @@ export function roundToOneDecimal(value: number): number {
  */
 export function getApiLang(i18nLang: string): string {
   if (i18nLang.startsWith('pt')) return 'pt_br';
+  if (i18nLang.startsWith('es')) return 'es';
   return 'en';
 }
 

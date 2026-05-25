@@ -5,7 +5,7 @@ const LANG_KEY = 'temperatura-local-lang';
 export function LanguageSelector() {
   const { i18n } = useTranslation();
 
-  const currentLang = i18n.language?.startsWith('pt') ? 'pt-BR' : 'en';
+  const currentLang = i18n.language?.startsWith('pt') ? 'pt-BR' : i18n.language?.startsWith('es') ? 'es' : 'en';
 
   function changeLanguage(lang: string) {
     i18n.changeLanguage(lang);
@@ -24,6 +24,17 @@ export function LanguageSelector() {
         }`}
       >
         PT
+      </button>
+      <button
+        onClick={() => changeLanguage('es')}
+        aria-pressed={currentLang === 'es'}
+        className={`rounded-full px-2 py-0.5 text-xs font-medium transition-all ${
+          currentLang === 'es'
+            ? 'bg-slate-200 dark:bg-white/20 text-slate-900 dark:text-white'
+            : 'text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/80'
+        }`}
+      >
+        ES
       </button>
       <button
         onClick={() => changeLanguage('en')}

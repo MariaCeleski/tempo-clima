@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import ptBR from './locales/pt-BR.json';
 import en from './locales/en.json';
+import es from './locales/es.json';
 
 const LANG_KEY = 'temperatura-local-lang';
 
@@ -14,6 +15,7 @@ i18n
     resources: {
       'pt-BR': { translation: ptBR },
       en: { translation: en },
+      es: { translation: es },
     },
     fallbackLng: 'pt-BR',
     interpolation: {
