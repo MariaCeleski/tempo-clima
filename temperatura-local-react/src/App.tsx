@@ -160,6 +160,10 @@ function App() {
     const validationError = validateInput(city);
     if (validationError) {
       setError(validationError);
+      setWeatherData(null);
+      setForecast([]);
+      setAlerts([]);
+      setAirQuality(null);
       return;
     }
 
@@ -203,6 +207,10 @@ function App() {
     const validationError = validateCep(cep);
     if (validationError) {
       setError(validationError);
+      setWeatherData(null);
+      setForecast([]);
+      setAlerts([]);
+      setAirQuality(null);
       return;
     }
 
@@ -376,6 +384,7 @@ function App() {
           />
 
           <div className="mt-6" aria-live="polite" aria-atomic="true">
+            {error && !isLoading && <ErrorMessage message={error} />}
             {isLoading && <SkeletonCard />}
             {weatherData && !isLoading && (
               <>
@@ -405,7 +414,6 @@ function App() {
                 <ForecastCard forecast={forecast} unit={unit} />
               </>
             )}
-            {error && !isLoading && <ErrorMessage message={error} />}
           </div>
         </div>
       </main>
