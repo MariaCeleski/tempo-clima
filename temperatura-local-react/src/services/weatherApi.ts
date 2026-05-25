@@ -284,8 +284,9 @@ function parseForecastResponse(data: ForecastApiResponse): ForecastDay[] {
   const dayMap = new Map<string, ForecastItem[]>();
 
   for (const item of data.list) {
+    // Use local date for grouping (not UTC) so days align with user's timezone
     const date = new Date(item.dt * 1000);
-    const dateKey = date.toISOString().slice(0, 10);
+    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
     const forecastItem: ForecastItem = {
       dt: item.dt,
@@ -306,15 +307,17 @@ function parseForecastResponse(data: ForecastApiResponse): ForecastDay[] {
     dayMap.get(dateKey)!.push(forecastItem);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Use local date for "today" filter (not UTC)
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   return Array.from(dayMap.entries())
     .filter(([key]) => key !== today)
     .map(([dateKey, periods]) => {
       // Find the period closest to noon as representative
       const noonPeriod = periods.reduce((best, current) => {
-        const bestHour = new Date(best.dt * 1000).getUTCHours();
-        const currentHour = new Date(current.dt * 1000).getUTCHours();
+        const bestHour = new Date(best.dt * 1000).getHours();
+        const currentHour = new Date(current.dt * 1000).getHours();
         return Math.abs(currentHour - 12) < Math.abs(bestHour - 12) ? current : best;
       });
 
