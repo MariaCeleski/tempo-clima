@@ -103,7 +103,7 @@ export function WeatherCard({ data, unit = 'C', airQuality, tempMin, tempMax, is
           {uvIndex != null && <UVIndex uvIndex={uvIndex} />}
 
           <div className="mt-2 rounded-lg bg-amber-50 dark:bg-white/5 px-3 py-2 text-sm text-amber-700 dark:text-amber-200" role="note" aria-label={t('weather.clothingSuggestion')}>
-            {suggestion}
+            {t(suggestion)}
           </div>
         </div>
       </div>

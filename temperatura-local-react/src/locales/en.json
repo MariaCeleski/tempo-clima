@@ -115,5 +115,11 @@
   "days.wed": "Wed",
   "days.thu": "Thu",
   "days.fri": "Fri",
-  "days.sat": "Sat"
+  "days.sat": "Sat",
+  "clothing.freezing": "🧥 Wear a heavy coat, gloves and scarf!",
+  "clothing.cold": "🧤 Bring a coat or jacket.",
+  "clothing.cool": "👕 A long-sleeve shirt is ideal.",
+  "clothing.pleasant": "😎 Light clothing, it's pleasant!",
+  "clothing.warm": "☀️ Light clothing and sunscreen!",
+  "clothing.hot": "🥵 Very hot! Stay hydrated."
 }

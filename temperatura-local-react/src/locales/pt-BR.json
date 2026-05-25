@@ -115,5 +115,11 @@
   "days.wed": "Qua",
   "days.thu": "Qui",
   "days.fri": "Sex",
-  "days.sat": "Sáb"
+  "days.sat": "Sáb",
+  "clothing.freezing": "🧥 Vista casaco pesado, luvas e cachecol!",
+  "clothing.cold": "🧤 Leve um casaco ou jaqueta.",
+  "clothing.cool": "👕 Uma blusa de manga longa é ideal.",
+  "clothing.pleasant": "😎 Roupa leve, está agradável!",
+  "clothing.warm": "☀️ Roupa leve e protetor solar!",
+  "clothing.hot": "🥵 Muito quente! Hidrate-se bastante."
 }

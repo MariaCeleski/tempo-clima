@@ -115,5 +115,11 @@
   "days.wed": "Mié",
   "days.thu": "Jue",
   "days.fri": "Vie",
-  "days.sat": "Sáb"
+  "days.sat": "Sáb",
+  "clothing.freezing": "🧥 ¡Usa abrigo pesado, guantes y bufanda!",
+  "clothing.cold": "🧤 Lleva un abrigo o chaqueta.",
+  "clothing.cool": "👕 Una camisa de manga larga es ideal.",
+  "clothing.pleasant": "😎 Ropa ligera, ¡está agradable!",
+  "clothing.warm": "☀️ ¡Ropa ligera y protector solar!",
+  "clothing.hot": "🥵 ¡Mucho calor! Hidrátate bastante."
 }

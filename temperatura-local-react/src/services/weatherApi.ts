@@ -440,17 +440,17 @@ export async function fetchCityByCep(cep: string): Promise<string> {
  */
 export function getClothingSuggestion(temperature: number): string {
   if (temperature <= 5) {
-    return '🧥 Vista casaco pesado, luvas e cachecol!';
+    return 'clothing.freezing';
   } else if (temperature <= 14) {
-    return '🧤 Leve um casaco ou jaqueta.';
+    return 'clothing.cold';
   } else if (temperature <= 19) {
-    return '👕 Uma blusa de manga longa é ideal.';
+    return 'clothing.cool';
   } else if (temperature <= 25) {
-    return '😎 Roupa leve, está agradável!';
+    return 'clothing.pleasant';
   } else if (temperature <= 32) {
-    return '☀️ Roupa leve e protetor solar!';
+    return 'clothing.warm';
   } else {
-    return '🥵 Muito quente! Hidrate-se bastante.';
+    return 'clothing.hot';
   }
 }
 
