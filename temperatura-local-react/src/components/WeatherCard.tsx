@@ -9,6 +9,8 @@ interface WeatherCardProps {
   data: WeatherData;
   unit?: 'C' | 'F';
   airQuality?: number | null;
+  tempMin?: number | null;
+  tempMax?: number | null;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
 }
@@ -20,7 +22,7 @@ function formatTime(timestamp: number, timezone: number): string {
   return `${hours}:${minutes}`;
 }
 
-export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, onToggleFavorite }: WeatherCardProps) {
+export function WeatherCard({ data, unit = 'C', airQuality, tempMin, tempMax, isFavorite = false, onToggleFavorite }: WeatherCardProps) {
   const { t } = useTranslation();
   const suggestion = getClothingSuggestion(data.temperature);
 
@@ -63,6 +65,16 @@ export function WeatherCard({ data, unit = 'C', airQuality, isFavorite = false, 
           <p className="text-3xl font-bold text-pink-600 dark:text-pink-300" aria-label={t('weather.temperatureAria', { temp: formatTemperature(data.temperature, unit) })}>
             {formatTemperature(data.temperature, unit)}
           </p>
+          {tempMin != null && tempMax != null && (
+            <div className="flex justify-center gap-4 text-sm">
+              <span className="text-blue-500 dark:text-blue-300" aria-label={`Mínima: ${formatTemperature(tempMin, unit)}`}>
+                ↓ {formatTemperature(tempMin, unit)}
+              </span>
+              <span className="text-rose-500 dark:text-pink-300" aria-label={`Máxima: ${formatTemperature(tempMax, unit)}`}>
+                ↑ {formatTemperature(tempMax, unit)}
+              </span>
+            </div>
+          )}
           <p className="text-sm text-slate-500 dark:text-white/60">
             {t('weather.feelsLike', { temp: formatTemperature(data.feels_like, unit) })}
           </p>

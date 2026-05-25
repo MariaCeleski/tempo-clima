@@ -463,6 +463,8 @@ function App() {
                     data={weatherData}
                     unit={unit}
                     airQuality={airQuality}
+                    tempMin={forecast.length > 0 ? forecast[0].temp_min : null}
+                    tempMax={forecast.length > 0 ? forecast[0].temp_max : null}
                     isFavorite={favorites.some((f) => f.toLowerCase() === weatherData.city_name.toLowerCase())}
                     onToggleFavorite={() => toggleFavorite(weatherData.city_name)}
                   />
