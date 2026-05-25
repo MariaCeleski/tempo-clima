@@ -55,6 +55,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
   useEffect(() => {
     if (mode !== 'city' || city.trim().length < 3) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
 
@@ -79,6 +80,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSuggestions([]);
     setShowSuggestions(false);
     if (mode === 'cep') {
       onSearchByCep(cep);
@@ -90,6 +92,7 @@ export function SearchForm({ onSearch, onSearchByCep, onGeolocate, isLoading, cl
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       e.preventDefault();
+      setSuggestions([]);
       setShowSuggestions(false);
       if (mode === 'cep') {
         onSearchByCep(cep);
